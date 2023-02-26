@@ -1,8 +1,8 @@
-﻿namespace NuvTools.Common.Enums;
-
+﻿
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 
+namespace NuvTools.Common.Enums;
 /// <summary>
 /// Representation of enum item with Id and Description fields.
 /// </summary>

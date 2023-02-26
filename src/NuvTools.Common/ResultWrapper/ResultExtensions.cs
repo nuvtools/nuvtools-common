@@ -1,9 +1,8 @@
-﻿namespace NuvTools.Common.ResultWrapper;
-
+﻿
 using System.Text.Json;
 using System.Text.Json.Serialization;
-using System.Threading.Tasks;
 
+namespace NuvTools.Common.ResultWrapper;
 public static class ResultExtensions
 {
     public static async Task<IResult<T>> ToResult<T>(this HttpResponseMessage response)

@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-
-namespace NuvTools.Common.Reflection;
+﻿namespace NuvTools.Common.Reflection;
 
 internal class ProgramInfo : IProgramInfo
 {

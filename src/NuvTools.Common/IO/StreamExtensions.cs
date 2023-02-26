@@ -1,7 +1,4 @@
-﻿using System.IO;
-using System.Threading.Tasks;
-
-namespace NuvTools.Common.IO;
+﻿namespace NuvTools.Common.IO;
 
 public static class StreamExtensions
 {

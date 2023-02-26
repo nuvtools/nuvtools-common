@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace NuvTools.Common.Dates;
+﻿namespace NuvTools.Common.Dates;
 
 public class SystemDateTimeService : IDateTimeService
 {

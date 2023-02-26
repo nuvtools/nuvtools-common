@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace NuvTools.Common.Reflection;
+﻿namespace NuvTools.Common.Reflection;
 
 public class VersionException : Exception
 {

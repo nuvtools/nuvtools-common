@@ -1,7 +1,4 @@
-﻿using System;
-using System.Linq;
-
-namespace NuvTools.Common.Serialization;
+﻿namespace NuvTools.Common.Serialization;
 
 public static class SerializationHelper
 {

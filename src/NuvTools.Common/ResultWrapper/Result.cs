@@ -1,9 +1,7 @@
-﻿namespace NuvTools.Common.ResultWrapper;
-
+﻿
 using Microsoft.Extensions.Logging;
-using System.Collections.Generic;
-using System.Threading.Tasks;
 
+namespace NuvTools.Common.ResultWrapper;
 public class Result : IResult
 {
     public Result()
