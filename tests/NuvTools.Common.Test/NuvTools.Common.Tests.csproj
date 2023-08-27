@@ -3,7 +3,7 @@
 	<PropertyGroup>
 		<TargetFramework>net7.0</TargetFramework>
 		<IsPackable>false</IsPackable>
-		<Version>7.0.1</Version>
+		<Version>7.0.2</Version>
 		<Authors>Nuv Tools</Authors>
 		<Copyright>Copyright © 2023 Nuv Tools</Copyright>
 		<PackageProjectUrl>https://nuv.tools</PackageProjectUrl>
@@ -13,8 +13,8 @@
 
 	<ItemGroup>
 		<PackageReference Include="nunit" Version="3.13.3" />
-		<PackageReference Include="NUnit3TestAdapter" Version="4.4.0" />
-		<PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.5.0" />
+		<PackageReference Include="NUnit3TestAdapter" Version="4.5.0" />
+		<PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.7.1" />
 	</ItemGroup>
 
 	<ItemGroup>
