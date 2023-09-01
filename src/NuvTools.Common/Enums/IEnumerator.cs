@@ -1,4 +1,6 @@
-﻿namespace NuvTools.Common.Enums;
+﻿using System.Text.Json.Serialization;
+
+namespace NuvTools.Common.Enums;
 
 public interface IEnumerator<TKey> where TKey : IEquatable<TKey>
 {
@@ -14,6 +16,8 @@ public interface IEnumerator<TKey> where TKey : IEquatable<TKey>
 
     int? Order { get; }
 
+    [JsonIgnore]
+    [Newtonsoft.Json.JsonIgnore]
     Type EnumeratorType { get; }
 }
 
