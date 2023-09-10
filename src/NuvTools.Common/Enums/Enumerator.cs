@@ -4,6 +4,7 @@ using System.ComponentModel.DataAnnotations;
 using System.Text.Json.Serialization;
 
 namespace NuvTools.Common.Enums;
+
 /// <summary>
 /// Representation of enum item with Id and Description fields.
 /// </summary>
@@ -23,7 +24,6 @@ internal class Enumerator<TKey> : IEnumerator<TKey> where TKey : IEquatable<TKey
     public int? Order { get; set; }
 
     [JsonIgnore]
-    [Newtonsoft.Json.JsonIgnore]
     public Type EnumeratorType { get; set; }
 
     public static implicit operator Enumerator<TKey>(Enum value)

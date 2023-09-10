@@ -1,7 +1,6 @@
-﻿using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
-using System.Globalization;
+﻿using System.Globalization;
 using System.Text;
+using System.Text.Json;
 
 namespace NuvTools.Common.Strings;
 
@@ -13,10 +12,7 @@ public static class StringExtensions
 
         length = Math.Abs(length);
 
-        return (value.Length <= length
-               ? value
-               : value.Substring(0, length)
-               );
+        return value.Length <= length ? value : value[..length];
     }
 
     public static string Right(this string value, int length)
@@ -25,10 +21,7 @@ public static class StringExtensions
 
         length = Math.Abs(length);
 
-        return (value.Length <= length
-               ? value
-               : value.Substring(value.Length - length, length)
-               );
+        return value.Length <= length ? value : value.Substring(value.Length - length, length);
     }
 
     public static string Format(this string format, params string[] values)
@@ -55,9 +48,7 @@ public static class StringExtensions
         {
             var unicodeCategory = CharUnicodeInfo.GetUnicodeCategory(c);
             if (unicodeCategory != UnicodeCategory.NonSpacingMark)
-            {
                 stringBuilder.Append(c);
-            }
         }
 
         return stringBuilder.ToString().Normalize(NormalizationForm.FormC);
@@ -73,10 +64,10 @@ public static class StringExtensions
         StringBuilder sb = new();
         foreach (char c in value)
         {
-            if ((c >= '0' && c <= '9') || (c >= 'A' && c <= 'Z') || (c >= 'a' && c <= 'z'))
-            {
+            if ((c >= '0' && c <= '9')
+                || (c >= 'A' && c <= 'Z')
+                || (c >= 'a' && c <= 'z'))
                 sb.Append(c);
-            }
         }
         return sb.ToString();
     }
@@ -98,11 +89,7 @@ public static class StringExtensions
             let lineBreak = ch == ',' && quotes % 2 == 0 ? ch + Environment.NewLine + String.Concat(Enumerable.Repeat(INDENT_STRING, indentation)) : null
             let openChar = ch == '{' || ch == '[' ? ch + Environment.NewLine + String.Concat(Enumerable.Repeat(INDENT_STRING, ++indentation)) : ch.ToString()
             let closeChar = ch == '}' || ch == ']' ? Environment.NewLine + String.Concat(Enumerable.Repeat(INDENT_STRING, --indentation)) + ch : ch.ToString()
-            select lineBreak == null
-                        ? openChar.Length > 1
-                            ? openChar
-                            : closeChar
-                        : lineBreak;
+            select lineBreak ?? (openChar.Length > 1 ? openChar : closeChar);
 
         return string.Concat(result);
     }
@@ -116,28 +103,25 @@ public static class StringExtensions
     {
         if (string.IsNullOrWhiteSpace(value)) { return false; }
         value = value.Trim();
-        if ((value.StartsWith("{") && value.EndsWith("}")) || //For object
-            (value.StartsWith("[") && value.EndsWith("]"))) //For array
+
+        if ((!value.StartsWith("{") || !value.EndsWith("}")) && //For object
+            (!value.StartsWith("[") || !value.EndsWith("]"))) //For array
+            return false;
+
+        try
         {
-            try
-            {
-                var obj = JToken.Parse(value);
-                return true;
-            }
-            catch (JsonReaderException jex)
-            {
-                //Exception in parsing json
-                Console.WriteLine(jex.Message);
-                return false;
-            }
-            catch (Exception ex) //some other exception
-            {
-                Console.WriteLine(ex.ToString());
-                return false;
-            }
+            var obj = JsonDocument.Parse(value);
+            return true;
         }
-        else
+        catch (JsonException jex)
         {
+            //Exception in parsing json
+            Console.WriteLine(jex.Message);
+            return false;
+        }
+        catch (Exception ex) //some other exception
+        {
+            Console.WriteLine(ex.ToString());
             return false;
         }
     }

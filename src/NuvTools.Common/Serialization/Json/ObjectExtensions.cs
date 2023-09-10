@@ -1,5 +1,4 @@
-﻿using Newtonsoft.Json;
-using Newtonsoft.Json.Serialization;
+﻿using System.Text.Json;
 
 namespace NuvTools.Common.Serialization.Json;
 
@@ -12,53 +11,23 @@ public static class ObjectExtensions
     /// <param name="value">Value to be copied.</param>
     /// <param name="totalLevel">Quantity of levels to be copied.</param>
     /// <returns></returns>
-    public static T Clone<T>(this T value, int totalLevel = 1) => value.Serialize(totalLevel).Deserialize<T>(totalLevel);
+    public static T Clone<T>(this T value, int totalLevel = 1) => value.Serialize(totalLevel).Deserialize<T>();
 
-    private static JsonSerializerSettings CreateConfiguration()
+    private static JsonSerializerOptions GetOptions<T>(int totalLevel = 1) => new()
     {
-        var configuration = new JsonSerializerSettings
-        {
-            Formatting = Formatting.None,
-            NullValueHandling = NullValueHandling.Ignore,
-            DateTimeZoneHandling = DateTimeZoneHandling.Utc,
-            ReferenceLoopHandling = ReferenceLoopHandling.Ignore,
-            PreserveReferencesHandling = PreserveReferencesHandling.None
-        };
-
-        return configuration;
-    }
+        Converters = { new MaxDepthJsonConverter<T>(totalLevel) }
+    };
 
     /// <summary>
     /// Serialize the value.
     /// </summary>
     /// <typeparam name="T"></typeparam>
     /// <param name="value">Value to be serialized.</param>
-    /// <param name="totalLevel">Quantity of levels to be copied.</param>
+    /// <param name="totalLevel">Quantity of levels to be serialized.</param>
     /// <returns></returns>
     public static string Serialize<T>(this T value, int totalLevel = 1)
     {
-        var configuracao = CreateConfiguration();
-
-        using (var strWriter = new StringWriter())
-        {
-            using (var jsonWriter = new MaxDepthJsonTextWriter(strWriter))
-            {
-                int levelRemaining() => totalLevel - jsonWriter.CurrentDepth;
-                var resolver = new CondicionalContractResolver(levelRemaining) { NamingStrategy = new CamelCaseNamingStrategy() };
-
-                var serializer = new JsonSerializer
-                {
-                    ContractResolver = resolver,
-                    Formatting = configuracao.Formatting,
-                    NullValueHandling = configuracao.NullValueHandling,
-                    DateFormatHandling = configuracao.DateFormatHandling,
-                    ReferenceLoopHandling = configuracao.ReferenceLoopHandling,
-                    PreserveReferencesHandling = configuracao.PreserveReferencesHandling,
-                };
-                serializer.Serialize(jsonWriter, value);
-            }
-            return strWriter.ToString();
-        }
+        return JsonSerializer.Serialize(value, GetOptions<T>(totalLevel));
     }
 
     /// <summary>
@@ -66,8 +35,13 @@ public static class ObjectExtensions
     /// </summary>
     /// <typeparam name="T"></typeparam>
     /// <param name="serializedValue">Serialized string (Json) to be deserialized.</param>
-    /// <param name="totalLevel">Quantity of levels to be retrieved.</param>
+    /// <param name="totalLevel">Quantity of levels to be deserialized. Default: 0 - Will returns all levels.</param>
     /// <returns></returns>
-    public static T Deserialize<T>(this string serializedValue, int totalLevel = 1) =>
-        JsonConvert.DeserializeObject<T>(serializedValue, CreateConfiguration());
+    public static T Deserialize<T>(this string serializedValue, int totalLevel = 0)
+    {
+        var obj = JsonSerializer.Deserialize<T>(serializedValue);
+        if (totalLevel == 0) return obj;
+
+        return obj.Serialize(totalLevel).Deserialize<T>();
+    }
 }

@@ -17,7 +17,6 @@ public interface IEnumerator<TKey> where TKey : IEquatable<TKey>
     int? Order { get; }
 
     [JsonIgnore]
-    [Newtonsoft.Json.JsonIgnore]
     Type EnumeratorType { get; }
 }
 
