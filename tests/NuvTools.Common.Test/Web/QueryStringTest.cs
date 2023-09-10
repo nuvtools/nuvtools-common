@@ -21,7 +21,7 @@ public class QueryStringTest
     }
 
     [Test]
-    public void Test1()
+    public void GetQueryString()
     {
         var obj = new FakeTest
         {
@@ -33,5 +33,12 @@ public class QueryStringTest
 
         var queryString = obj.GetQueryString("https://nuv.tools");
         Assert.That(queryString, Is.EqualTo("https://nuv.tools?Id=1&Date=2023-01-01T12%3A00%3A00&Name=Hello%20World!&Codes=1&Codes=2&Codes=3"));
+    }
+
+    [Test]
+    public void ParseQueryString()
+    {
+        var parsedQueryString = "https://nuv.tools?Id=1&Date=2023-01-01T12%3A00%3A00&Name=Hello%20World!&Codes=1&Codes=2&Codes=3&Exists".ParseQueryString();
+        Assert.That(parsedQueryString.Count, Is.EqualTo(5));
     }
 }

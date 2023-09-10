@@ -3,6 +3,7 @@ using System.Collections;
 using System.Globalization;
 using System.Text.Encodings.Web;
 using System.Text.Json;
+using System.Web;
 
 namespace NuvTools.Common.Web;
 
@@ -53,6 +54,40 @@ public static class ObjectExtensions
         }
 
         var result = $"{uriBase}?{string.Join('&', list.Select(e => $"{UrlEncoder.Default.Encode(e.Key)}={UrlEncoder.Default.Encode(e.Value)}"))}";
+
+        return result;
+    }
+
+
+    /// <summary>
+    /// Gets the dictionary from QueryString.
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <param name="queryString">QueryString to parse</param>
+    /// <returns></returns>
+    public static Dictionary<string, object> ParseQueryString(this string queryString)
+    {
+        if (string.IsNullOrEmpty(queryString)) throw new ArgumentNullException(nameof(queryString));
+
+        var result = new Dictionary<string, object>();
+
+        var parts = queryString.Split('?');
+
+        if (parts.Length == 2)
+            result.Add("UriBase", parts[0]);
+
+        var parameters = parts[parts.Length == 2 ? 1 : 0].Split('&');
+
+        var listAux = new List<KeyValuePair<string, string>>();
+
+        foreach (var item in parameters)
+        {
+            var keyValue = item.Split('=');
+            listAux.Add(new KeyValuePair<string, string>(HttpUtility.UrlDecode(keyValue[0]), keyValue.Length == 2 ? HttpUtility.UrlDecode(keyValue[1]) : null));
+        }
+
+        foreach (var item in listAux.GroupBy(e => e.Key))
+            result.Add(item.Key, item.Count() > 1 ? item.Select(e => e.Value).ToArray() : item.First().Value);
 
         return result;
     }
