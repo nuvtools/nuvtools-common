@@ -16,8 +16,11 @@ public static class ObjectExtensions
     /// <param name="obj">Object source to generate QueryString</param>
     /// <param name="uriBase">Uri base address</param>
     /// <returns></returns>
-    public static string GetQueryString<T>(this T obj, string uriBase) where T : class
+    public static string GetQueryString<T>(this T obj, string uriBase = null) where T : class
     {
+        if (obj == null) throw new ArgumentNullException(nameof(obj));
+        if (string.IsNullOrEmpty(uriBase)) uriBase = string.Empty;
+
         var properties = from p in obj.GetType().GetProperties()
                          where p.GetValue(obj, null) != null
                          select p;
@@ -62,12 +65,11 @@ public static class ObjectExtensions
     /// <summary>
     /// Gets the dictionary from QueryString.
     /// </summary>
-    /// <typeparam name="T"></typeparam>
     /// <param name="queryString">QueryString to parse</param>
     /// <returns></returns>
     public static Dictionary<string, object> ParseQueryString(this string queryString)
     {
-        if (string.IsNullOrEmpty(queryString)) throw new ArgumentNullException(nameof(queryString));
+        if (string.IsNullOrEmpty(queryString)) return new Dictionary<string, object>();
 
         var result = new Dictionary<string, object>();
 
@@ -88,6 +90,12 @@ public static class ObjectExtensions
 
         foreach (var item in listAux.GroupBy(e => e.Key))
             result.Add(item.Key, item.Count() > 1 ? item.Select(e => e.Value).ToArray() : item.First().Value);
+
+        if (result.Count == 1 && result.Any(e => e.Key.Contains("http")))
+        {
+            result.Clear();
+            result.Add("UriBase", queryString);
+        }
 
         return result;
     }

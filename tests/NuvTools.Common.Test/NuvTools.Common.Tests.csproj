@@ -3,7 +3,7 @@
 	<PropertyGroup>
 		<TargetFramework>net7.0</TargetFramework>
 		<IsPackable>false</IsPackable>
-		<Version>7.1.2</Version>
+		<Version>7.1.3</Version>
 		<Authors>Nuv Tools</Authors>
 		<Copyright>Copyright © 2023 Nuv Tools</Copyright>
 		<PackageProjectUrl>https://nuv.tools</PackageProjectUrl>
