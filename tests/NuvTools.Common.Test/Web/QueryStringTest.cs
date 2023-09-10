@@ -39,6 +39,13 @@ public class QueryStringTest
     public void ParseQueryString()
     {
         var parsedQueryString = "https://nuv.tools?Id=1&Date=2023-01-01T12%3A00%3A00&Name=Hello%20World!&Codes=1&Codes=2&Codes=3&Exists".ParseQueryString();
+        Assert.That(parsedQueryString.Count, Is.EqualTo(6));
+    }
+
+    [Test]
+    public void ParseQueryString2()
+    {
+        var parsedQueryString = "Id=1&Date=2023-01-01T12%3A00%3A00&Name=Hello%20World!&Codes=1&Codes=2&Codes=3&Exists".ParseQueryString();
         Assert.That(parsedQueryString.Count, Is.EqualTo(5));
     }
 }
