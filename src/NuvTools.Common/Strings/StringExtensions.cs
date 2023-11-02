@@ -1,11 +1,19 @@
 ﻿using System.Globalization;
 using System.Text;
 using System.Text.Json;
+using System.Text.RegularExpressions;
 
 namespace NuvTools.Common.Strings;
 
 public static class StringExtensions
 {
+    /// <summary>
+    /// Gets the first characters from string.
+    /// </summary>
+    /// <param name="value">String that contains the characters to be extracted.</param>
+    /// <param name="length">The number of characters to be extracted.</param>
+    /// <returns></returns>
+    /// <exception cref="ArgumentNullException"></exception>
     public static string Left(this string value, int length)
     {
         if (string.IsNullOrEmpty(value)) throw new ArgumentNullException(nameof(value));
@@ -15,6 +23,13 @@ public static class StringExtensions
         return value.Length <= length ? value : value[..length];
     }
 
+    /// <summary>
+    /// Gets the last characters from string.
+    /// </summary>
+    /// <param name="value">String that contains the characters to be extracted.</param>
+    /// <param name="length">The number of characters to be extracted.</param>
+    /// <returns></returns>
+    /// <exception cref="ArgumentNullException"></exception>
     public static string Right(this string value, int length)
     {
         if (string.IsNullOrEmpty(value)) throw new ArgumentNullException(nameof(value));
@@ -24,13 +39,81 @@ public static class StringExtensions
         return value.Length <= length ? value : value.Substring(value.Length - length, length);
     }
 
-    public static string Format(this string format, params string[] values)
+    /// <summary>
+    /// Replaces the format item in a specified string with the string representation of a corresponding object by the key in the Dictionary.
+    /// </summary>
+    /// <param name="template">A composite format string.</param>
+    /// <param name="args">A string array that contains zero or more objects to format.</param>
+    /// <returns>A copy of format in which the format items have been replaced by the string representation of the corresponding strings in args.</returns>
+    /// <exception cref="ArgumentNullException"></exception>
+    public static string Format(this string template, params object[] args)
     {
-        if (string.IsNullOrEmpty(format)) throw new ArgumentNullException(nameof(format));
-
-        return string.Format(format, values);
+        if (string.IsNullOrEmpty(template)) throw new ArgumentNullException(nameof(template));
+        return template.Format(null, args);
     }
 
+    /// <summary>
+    /// Replaces the format item in a specified string with the string representation of a corresponding object by the key in the Dictionary.
+    /// </summary>
+    /// <param name="template">A composite format string.</param>
+    /// <param name="args">A string array that contains zero or more objects to format.</param>
+    /// <param name="provider">An object that supplies culture-specific formatting information.</param>
+    /// <returns>A copy of format in which the format items have been replaced by the string representation of the corresponding strings in args.</returns>
+    /// <exception cref="ArgumentNullException"></exception>
+    public static string Format(this string template, IFormatProvider provider, params object[] args)
+    {
+        if (string.IsNullOrEmpty(template)) throw new ArgumentNullException(nameof(template));
+        if (args == null || args.Length == 0) throw new ArgumentNullException(nameof(args));
+
+        var dictionary = new Dictionary<string, object>();
+
+        for (int i = 0; i < args.Length; i++)
+            dictionary.Add(i.ToString(), args[i]);
+
+        return template.Format(dictionary, provider);
+    }
+
+    /// <summary>
+    /// Replaces the format item in a specified string with the string representation of a corresponding object by the key in the Dictionary.
+    /// </summary>
+    /// <param name="template">A composite format string.</param>
+    /// <param name="args">A Dictionary that contains zero or more values to format by the key.</param>
+    /// <param name="provider">An object that supplies culture-specific formatting information.</param>
+    /// <returns>A copy of format in which the format items have been replaced by the string representation of the corresponding values in Dictionary.</returns>
+    /// <exception cref="ArgumentNullException"></exception>
+    public static string Format(this string template, Dictionary<string, object> args, IFormatProvider provider = null)
+    {
+        if (string.IsNullOrEmpty(template)) throw new ArgumentNullException(nameof(template));
+
+        if (args == null || args.Count == 0) throw new ArgumentNullException(nameof(args));
+
+        var regex = new Regex("{(?<variable>\\w+)(:(?<format>[\\w\\/]+))?\\}");
+        var templateTokens = regex.Matches(template).Select(e => e.Groups["variable"]).Select(e => e.Value).Distinct().ToList();
+
+        if (templateTokens.Count == 0) return template;
+
+        var dicIndex = new Dictionary<int, object>();
+        var index = -1;
+        foreach (var token in templateTokens)
+        {
+            index++;
+            args.TryGetValue(token, out var valueDic);
+
+            if (valueDic == null) args.TryGetValue(index.ToString(), out valueDic);
+
+            dicIndex.Add(index, valueDic);
+
+            template = regex.Replace(template, m =>
+            {
+                string variable = m.Groups["variable"].Value;
+                string format = m.Groups["format"].Value;
+
+                return $"{{{(variable == token ? index : variable)}{(!string.IsNullOrEmpty(format) ? ":" + format : string.Empty)}}}";
+            });
+        }
+
+        return string.Format(provider, template, dicIndex.Values.ToArray());
+    }
 
     /// <summary>
     /// Remove a sign, such as an accent or cedill.
@@ -73,7 +156,7 @@ public static class StringExtensions
     }
 
     /// <summary>
-    /// Format the string to Json pretty-format.
+    /// Format the string to pretty-format Json.
     /// </summary>
     /// <param name="value">Json content.</param>
     /// <returns></returns>
