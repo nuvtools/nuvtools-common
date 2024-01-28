@@ -149,7 +149,7 @@ public class ObjectExtensionsTests
     public void SerializeTest()
     {
         serializedObject = modelInstance.Serialize(2);
-        Assert.IsNotNull(serializedObject);
+        Assert.That(serializedObject is not null);
     }
 
     private string serializedLists;
@@ -157,7 +157,7 @@ public class ObjectExtensionsTests
     public void SerializeListTest()
     {
         serializedLists = modelInstanceLists.Serialize(2);
-        Assert.IsNotNull(serializedLists);
+        Assert.That(serializedLists is not null);
     }
 
     private string serializedNestedLists;
@@ -165,20 +165,20 @@ public class ObjectExtensionsTests
     public void SerializeNestedListTest()
     {
         serializedNestedLists = modelInstanceListsNested.Serialize(4);
-        Assert.IsNotNull(serializedNestedLists);
+        Assert.That(serializedNestedLists is not null);
     }
 
     [Test(), Order(4)]
     public void DeserializeTest()
     {
         var copiedObject = modelInstance.Serialize(4).Deserialize<ModelTest>(3);
-        Assert.IsNotNull(copiedObject);
+        Assert.That(copiedObject is not null);
     }
 
     [Test(), Order(5)]
     public void CopyTest()
     {
         var copiedObject = modelInstance.Clone(2);
-        Assert.AreNotSame(modelInstance, copiedObject);
+        Assert.That(modelInstance != copiedObject);
     }
 }

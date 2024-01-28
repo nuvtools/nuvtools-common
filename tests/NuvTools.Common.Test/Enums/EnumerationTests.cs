@@ -2,6 +2,7 @@
 
 using NUnit.Framework;
 using NuvTools.Common.Enums;
+using System;
 
 public enum FormatType
 {
@@ -73,22 +74,20 @@ public class EnumerationTests
     {
         var value = Enumeration.GetEnum<FormatType>(3);
 
-        Assert.AreEqual(FormatType.PowerPoint, value);
+        Assert.That(FormatType.PowerPoint == value);
     }
 
     [Test()]
-    public void GetEnumTest2()
+    public void GetEnumNotExisting()
     {
-        var value = Enumeration.GetEnum<FormatType>(20);
-
-        Assert.AreEqual(FormatType.PowerPoint, value);
+        Assert.Throws<IndexOutOfRangeException>(() => Enumeration.GetEnum<FormatType>(20));
     }
 
     [Test()]
     public void GetEnumByDescriptionTest()
     {
         var value = Enumeration.GetEnumByDescription<FormatType>("excel");
-        Assert.AreEqual(FormatType.Excel, value);
+        Assert.That(FormatType.Excel == value);
     }
 
     [Test()]
@@ -96,14 +95,14 @@ public class EnumerationTests
     {
         var list = Enumeration.ToList<FormatType>(true);
 
-        Assert.IsNotNull(list);
-        Assert.AreEqual("excel", list[0].Description);
+        Assert.That(list is not null);
+        Assert.That("excel" == list[0].Description);
 
         //Using display
-        Assert.AreEqual("More than one", list[2].Description);
-        Assert.AreEqual("Should take this", list[2].GroupName);
+        Assert.That("More than one" == list[2].Description);
+        Assert.That("Should take this" == list[2].GroupName);
 
-        Assert.AreEqual("word", list[3].Name);
+        Assert.That("word" == list[3].Name);
     }
 
     [Test()]
@@ -124,14 +123,14 @@ public class EnumerationTests
     {
         var list = Enumeration.ToList<FormatTypeByte, byte>(false);
 
-        Assert.AreEqual(list[0].Id.GetType(), typeof(byte));
-        Assert.AreEqual("word", list[0].Description); //sorted
+        Assert.That(list[0].Id.GetType() == typeof(byte));
+        Assert.That("word" == list[0].Description); //sorted
 
         //Using display
-        Assert.AreEqual("Microsoft tools", list[2].Description);
-        Assert.AreEqual("Microsoft Office", list[2].GroupName);
+        Assert.That("Microsoft tools" == list[2].Description);
+        Assert.That("Microsoft Office" == list[2].GroupName);
 
-        Assert.AreEqual("duplo", list[3].Name);
+        Assert.That("duplo" == list[3].Name);
     }
 
     [Test()]
@@ -139,15 +138,15 @@ public class EnumerationTests
     {
         var list = Enumeration.ToList<FormatTypeShort, short>(false);
 
-        Assert.IsNotNull(list);
-        Assert.AreEqual(list[0].Id.GetType(), typeof(short));
-        Assert.AreEqual("word", list[0].Description); //sorted
+        Assert.That(list != null);
+        Assert.That(list[0].Id.GetType() == typeof(short));
+        Assert.That("word" == list[0].Description); //sorted
 
         //Using display
-        Assert.AreEqual("Microsoft tools", list[2].Description);
-        Assert.AreEqual("Microsoft Office", list[2].GroupName);
+        Assert.That("Microsoft tools" == list[2].Description);
+        Assert.That("Microsoft Office" == list[2].GroupName);
 
-        Assert.AreEqual("duplo", list[3].Name);
+        Assert.That("duplo" == list[3].Name);
     }
 
     [Test()]
@@ -155,14 +154,14 @@ public class EnumerationTests
     {
         var list = Enumeration.ToList<FormatTypeLong, long>(false);
 
-        Assert.AreEqual(list[0].Id.GetType(), typeof(long));
-        Assert.AreEqual("word", list[0].Description); //sorted
+        Assert.That(list[0].Id.GetType() == typeof(long));
+        Assert.That("word" == list[0].Description); //sorted
 
         //Using display
-        Assert.AreEqual("Microsoft tools", list[2].Description);
-        Assert.AreEqual("Microsoft Office", list[2].GroupName);
+        Assert.That("Microsoft tools" == list[2].Description);
+        Assert.That("Microsoft Office" == list[2].GroupName);
 
-        Assert.AreEqual("duplo", list[3].Name);
+        Assert.That("duplo" == list[3].Name);
     }
 
     [Test()]

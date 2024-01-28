@@ -12,7 +12,7 @@ namespace NuvTools.Common.Tests.Strings
         [Test()]
         public void FormatTest()
         {
-            Assert.AreEqual("{0} Company {year} and profit {value:N2}".Format("Nuv Tools", 2023, 64.2893), "Nuv Tools Company 2023 and profit 64.29");
+            Assert.That("{0} Company {year} and profit {value:N2}".Format(new CultureInfo("en-US"), "Nuv Tools", 2023, 64.2893) == "Nuv Tools Company 2023 and profit 64.29");
         }
 
         [Test()]
@@ -29,7 +29,7 @@ namespace NuvTools.Common.Tests.Strings
                 { "value", 45.3532 }
             };
 
-            Assert.AreEqual(value.Format(variables), "Bruno testing Format Function useful to Nuv Tools and Format Function again on 02/11/2023 and . Only for 45.35");
+            Assert.That(value.Format(variables, new CultureInfo("en-US")) == "Bruno testing Format Function useful to Nuv Tools and Format Function again on 02/11/2023 and . Only for 45.35");
         }
 
         [Test()]
@@ -45,7 +45,7 @@ namespace NuvTools.Common.Tests.Strings
                 { "value", 45.3532 }
             };
 
-            Assert.AreEqual(value.Format(variables), value);
+            Assert.That(value.Format(variables) == value);
 
             Assert.Throws<ArgumentNullException>(() => "".Format(new Dictionary<string, object>()));
             Assert.Throws<ArgumentNullException>(() => value.Format(new Dictionary<string, object>()));
@@ -62,31 +62,31 @@ namespace NuvTools.Common.Tests.Strings
                 { "value", 52.38532 } //will be rounded
             };
 
-            Assert.AreEqual(value.Format(variables, new CultureInfo("pt-BR")), "Testing 52,39 and index Nuv Tools");
+            Assert.That(value.Format(variables, new CultureInfo("pt-BR")) == "Testing 52,39 and index Nuv Tools");
         }
 
-        
+
 
         [Test()]
         public void LeftTest()
         {
-            Assert.AreEqual("Nuv Tools".Left(3), "Nuv");
+            Assert.That("Nuv Tools".Left(3) == "Nuv");
 
-            Assert.AreEqual("Nuv Tools".Left(10), "Nuv Tools");
+            Assert.That("Nuv Tools".Left(10) == "Nuv Tools");
         }
 
         [Test()]
         public void RightTest()
         {
-            Assert.AreEqual("Nuv Tools".Right(5), "Tools");
+            Assert.That("Nuv Tools".Right(5) == "Tools");
 
-            Assert.AreEqual("Nuv Tools".Right(10), "Nuv Tools");
+            Assert.That("Nuv Tools".Right(10) == "Nuv Tools");
         }
 
         [Test()]
         public void RemoveDiacriticsTest()
         {
-            Assert.AreEqual("Sáo Pãulo".RemoveDiacritics(), "Sao Paulo");
+            Assert.That("Sáo Pãulo".RemoveDiacritics() == "Sao Paulo");
         }
     }
 }

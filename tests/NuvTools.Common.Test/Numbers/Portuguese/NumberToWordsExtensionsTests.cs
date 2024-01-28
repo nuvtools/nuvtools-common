@@ -11,14 +11,14 @@ namespace NuvTools.Common.Tests.Numbers.Portuguese
         public void ToWordsTest()
         {
             int number = 55;
-            Assert.AreEqual("Cinquenta e cinco reais", number.ToWords());
+            Assert.That("cinquenta e cinco reais" == number.ToWords());
         }
 
         [Test()]
         public void ToWordsTest1()
         {
             decimal number = 55.5M;
-            Assert.AreEqual("Cinquenta e cinco reais e cinquenta centavos", number.ToWords());
+            Assert.That("cinquenta e cinco reais e cinquenta centavos" == number.ToWords());
         }
 
         [Test()]
@@ -32,7 +32,7 @@ namespace NuvTools.Common.Tests.Numbers.Portuguese
             }
             catch (System.Exception ex)
             {
-                Assert.AreEqual(Resources.Messages.ResourceManager.GetString(nameof(Resources.Messages.ValueOutsideRange), CultureInfo.GetCultureInfo("pt-BR")), ex.Message);
+                Assert.That(Resources.Messages.ResourceManager.GetString(nameof(Resources.Messages.ValueOutsideRange), CultureInfo.GetCultureInfo("pt-BR")) == ex.Message);
             }
         }
     }

@@ -16,7 +16,7 @@ public static class NumberToWords
                                                    };
 
     private static readonly string[] dozen = {
-                                                      string.Empty, "dez", "vinte", "trinta", "quarenta", "cinqüenta", "sessenta"
+                                                      string.Empty, "dez", "vinte", "trinta", "quarenta", "cinquenta", "sessenta"
                                                       , "setenta", "oitenta", "noventa"
                                                   };
 
@@ -31,10 +31,10 @@ public static class NumberToWords
     private const decimal maxValue = 999999999999999.99M;
     private const string currency = " real ";
     private const string currencyPlural = " reais ";
-    private const string centesimo = " centavo ";
-    private const string centesimoPlural = " centavos ";
+    private const string hundredth = " centavo ";
+    private const string hundredthPlural = " centavos ";
 
-    private static string Converter(long value)
+    private static string Convert(long value)
     {
         long result;
 
@@ -56,7 +56,7 @@ public static class NumberToWords
             value >= 71 && value <= 79 ||
             value >= 81 && value <= 89 ||
             value >= 91 && value <= 99)
-            return dozen[result] + " e " + Converter(remainder);
+            return dozen[result] + " e " + Convert(remainder);
 
         result = NumbersHelper.DivRem(value, 100, out remainder);
 
@@ -66,7 +66,7 @@ public static class NumberToWords
             return hundreds[result] + ", ";
 
         if (value >= 101 && value <= 199)
-            return " cento e " + Converter(remainder);
+            return " cento e " + Convert(remainder);
 
         if (value >= 201 && value <= 299 ||
             value >= 301 && value <= 399 ||
@@ -77,64 +77,64 @@ public static class NumberToWords
             value >= 801 && value <= 899 ||
             value >= 901 && value <= 999)
             return hundreds[result] + " e " +
-                   Converter(remainder);
+                   Convert(remainder);
 
         result = NumbersHelper.DivRem(value, 1000, out remainder);
 
         if (value >= 1000 && value <= 999999)
-            return Converter(result) + " mil " +
-                   Converter(remainder);
+            return Convert(result) + " mil " +
+                   Convert(remainder);
 
         result = NumbersHelper.DivRem(value, 1000000, out remainder);
 
         if (value >= 1000000 && value <= 1999999)
-            return Converter(result) + " milhão " +
-                   Converter(remainder);
+            return Convert(result) + " milhão " +
+                   Convert(remainder);
 
         if (value >= 2000000 && value <= 999999999)
-            return Converter(result) + " milhões " +
-                   Converter(remainder);
+            return Convert(result) + " milhões " +
+                   Convert(remainder);
 
         result = NumbersHelper.DivRem(value, 1000000000, out remainder);
 
         if (value >= 1000000000 && value <= 1999999999)
-            return Converter(result) + " bilhão " +
-                   Converter(remainder);
+            return Convert(result) + " bilhão " +
+                   Convert(remainder);
 
         if (value >= 2000000000 && value <= 999999999999)
-            return Converter(result) + " bilhões " +
-                   Converter(remainder);
+            return Convert(result) + " bilhões " +
+                   Convert(remainder);
 
         result = NumbersHelper.DivRem(value, 1000000000000, out remainder);
 
         if (value >= 1000000000000 && value <= 1999999999999)
-            return Converter(result) + " trilhão " +
-                   Converter(remainder);
+            return Convert(result) + " trilhão " +
+                   Convert(remainder);
 
         if (value >= 2000000000000 && value <= 999999999999999)
-            return Converter(result) + " trilhões " +
-                   Converter(remainder);
+            return Convert(result) + " trilhões " +
+                   Convert(remainder);
 
         return string.Empty;
     }
 
     public static string ToWords(decimal value)
     {
-        string texto = string.Empty;
+        string result = string.Empty;
 
         if (value >= minValue && value <= maxValue)
         {
-            long inteiro = Convert.ToInt64(Math.Truncate(value));
-            long centavos = Convert.ToInt64(Math.Truncate((value - Math.Truncate(value)) * 100));
+            long intPart = System.Convert.ToInt64(Math.Truncate(value));
+            long decimalPart = System.Convert.ToInt64(Math.Truncate((value - Math.Truncate(value)) * 100));
 
-            texto += Converter(inteiro) + (inteiro <= 1 ? currency : currencyPlural);
+            result += Convert(intPart) + (intPart <= 1 ? currency : currencyPlural);
 
-            if (centavos > 0)
-                texto += " e " + Converter(centavos) + (centavos == 1 ? centesimo : centesimoPlural);
+            if (decimalPart > 0)
+                result += " e " + Convert(decimalPart) + (decimalPart == 1 ? hundredth : hundredthPlural);
         }
         else
             throw new Exception(Messages.ResourceManager.GetString(nameof(Messages.ValueOutsideRange), CultureInfo.GetCultureInfo("pt-BR")));
 
-        return NumbersHelper.CleanupSpaces(texto);
+        return NumbersHelper.CleanupSpaces(result);
     }
 }

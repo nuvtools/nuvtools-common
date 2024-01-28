@@ -10,7 +10,7 @@ namespace NuvTools.Common.Tests.Reflection
         public void ResourceByNameTest()
         {
             var resource = AssemblyHelper.ResourceByName("Assets.Image.bmp", "NuvTools.Common.Tests");
-            Assert.IsNotNull(resource);
+            Assert.That(resource != null);
         }
     }
 }

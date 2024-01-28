@@ -5,6 +5,7 @@ using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Reflection;
+using System.Xml.Linq;
 
 namespace NuvTools.Common.Enums;
 /// <summary>
@@ -119,9 +120,9 @@ public static class Enumeration
 
         var enumList = ToList<TEnum>();
 
-        var enumerator = enumList.FirstOrDefault(e => e.ShortName == shortName
-                                                        || e.Name == name
-                                                        || e.Description == description);
+        var enumerator = enumList.FirstOrDefault(e => (shortName != null && e.ShortName == shortName)
+                                                        || (name != null && e.Name == name)
+                                                        || (description != null && e.Description == description));
 
         if (enumerator == null)
             return (TEnum)Enum.Parse(typeof(TEnum), enumList[0].Id.ToString(), true);

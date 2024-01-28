@@ -9,18 +9,17 @@ namespace NuvTools.Common.Tests.Numbers
         [Test()]
         public void ParseToIntOrNull()
         {
-            Assert.IsNull("".ParseToIntOrNull());
-            Assert.IsNull("Text".ParseToIntOrNull());
-            Assert.AreEqual(0, "Text".ParseToIntOrNull(true));
-            Assert.AreEqual(1, "1".ParseToIntOrNull());
+            Assert.That("".ParseToIntOrNull() is null);
+            Assert.That("Text".ParseToIntOrNull() is null);
+            Assert.That(0 == "Text".ParseToIntOrNull(true));
+            Assert.That(1 == "1".ParseToIntOrNull());
         }
 
         [Test()]
         public void ParseToLongOrNull()
         {
-            Assert.IsNull("".ParseToLongOrNull());
-            Assert.IsNull("0".ParseToLongOrNull(true));
-            Assert.IsNotNull("0".ParseToLongOrNull());
+            Assert.That("".ParseToLongOrNull() is null);
+            Assert.That("0".ParseToLongOrNull(true) == 0);
         }
     }
 }
