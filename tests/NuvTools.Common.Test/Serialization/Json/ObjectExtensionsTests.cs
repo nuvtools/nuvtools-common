@@ -5,6 +5,20 @@ using System.Collections.Generic;
 
 namespace NuvTools.Common.Tests.Serialization.Json;
 
+public enum EnumShort : short
+{
+    Option1 = 0,
+    Option2 = 1,
+    Option3 = 2,
+}
+
+public enum EnumInt
+{
+    Option1 = 0,
+    Option2 = 1,
+    Option3 = 2
+}
+
 class ModelTest
 {
     public int Id { get; set; }
@@ -20,6 +34,9 @@ class ModelTest
 
     public int[] Numbers { get; set; }
     public string[] Strings { get; set; }
+
+    public EnumShort EnumShortP { get; set; }
+    public EnumInt EnumP { get; set; }
 }
 
 class ModelListTest
@@ -46,8 +63,7 @@ public class ObjectExtensionsTests
     private readonly ModelListTest modelInstanceLists = new()
     {
         Name = "List",
-        ChildrenList = new List<ModelTest> { new ModelTest
-            {
+        ChildrenList = new List<ModelTest> { new() {
                 Id = 30,
                 Name = "ABC",
                 YearBirth = 1991,
@@ -97,6 +113,8 @@ public class ObjectExtensionsTests
         Value = (decimal)1.43,
         Numbers = new[] { 1, 2, 3, 4 },
         Strings = new[] { "one", "two", "three", "four" },
+        EnumP = EnumInt.Option2,
+        EnumShortP = EnumShort.Option3,
         ChildrenList = new List<ModelTest> { new ModelTest
             {
                 Id = 30,
@@ -180,5 +198,17 @@ public class ObjectExtensionsTests
     {
         var copiedObject = modelInstance.Clone(2);
         Assert.That(modelInstance != copiedObject);
+    }
+
+    [Test(), Order(6)]
+    public void SerializeEnumTest()
+    {
+        var modelEnum = new ModelTest { EnumP = EnumInt.Option3, EnumShortP= EnumShort.Option1 };
+
+        serializedObject = modelEnum.Serialize(2);
+        Assert.That(serializedObject is not null);
+
+        ModelTest newModelTest = serializedObject.Deserialize<ModelTest>();
+        Assert.That(newModelTest.EnumShortP == EnumShort.Option1);
     }
 }

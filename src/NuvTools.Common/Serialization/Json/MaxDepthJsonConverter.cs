@@ -51,6 +51,12 @@ public class MaxDepthJsonConverter<T> : JsonConverter<T>
             return;
         }
 
+        if (objectType.IsEnum)
+        {
+            JsonSerializer.Serialize(writer, obj, objectType, options);
+            return;
+        }
+
         if (currentDepth > maxDepth)
         {
             writer.WriteNullValue();
