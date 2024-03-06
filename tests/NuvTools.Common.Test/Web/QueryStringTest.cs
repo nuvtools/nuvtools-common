@@ -7,12 +7,21 @@ namespace NuvTools.Common.Tests.Web;
 
 public class QueryStringTest
 {
+    public enum EnumFake
+    {
+        Option1 = 0,
+        Option2 = 1,
+        Option3 = 2
+    }
+
     public class FakeTest
     {
         public int Id { get; set; }
         public DateTime? Date { get; set; }
         public string Name { get; set; }
         public List<long> Codes { get; set; }
+
+        public EnumFake EnumFake { get; set; }
     }
 
     [SetUp]
@@ -48,6 +57,22 @@ public class QueryStringTest
 
         var queryString = obj.GetQueryString();
         Assert.That(queryString, Is.EqualTo("?Id=1&Date=2023-01-01T12%3A00%3A00&Name=Hello%20World!&Codes=1&Codes=2&Codes=3"));
+    }
+
+    [Test]
+    public void GetQueryStringEnum()
+    {
+        var obj = new FakeTest
+        {
+            Date = new DateTime(2023, 1, 1),
+            Id = 1,
+            Name = "Hello World!",
+            Codes = [1, 2, 3],
+            EnumFake = EnumFake.Option2
+        };
+
+        var queryString = obj.GetQueryString();
+        Assert.That(queryString, Is.EqualTo("?Id=1&Date=2023-01-01T12%3A00%3A00&Name=Hello%20World!&Codes=1&Codes=2&Codes=3&EnumFake=1"));
     }
 
     [Test]

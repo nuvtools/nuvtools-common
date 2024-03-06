@@ -18,7 +18,8 @@ public static class ObjectExtensions
     /// <returns></returns>
     public static string GetQueryString<T>(this T obj, string uriBase = null) where T : class
     {
-        if (obj == null) throw new ArgumentNullException(nameof(obj));
+        ArgumentNullException.ThrowIfNull(obj);
+
         if (string.IsNullOrEmpty(uriBase)) uriBase = string.Empty;
 
         var properties = from p in obj.GetType().GetProperties()
@@ -42,6 +43,13 @@ public static class ObjectExtensions
                             : itemValue.ToString();
 
                 list.Add(new KeyValuePair<string, string>(item.Name, value));
+                continue;
+            }
+
+            if (itemType.IsEnum)
+            {
+                var enumValue = Convert.ChangeType(itemValue, Enum.GetUnderlyingType(itemType));
+                list.Add(new KeyValuePair<string, string>(item.Name, enumValue.ToString()));
                 continue;
             }
 
@@ -69,7 +77,7 @@ public static class ObjectExtensions
     /// <returns></returns>
     public static Dictionary<string, object> ParseQueryString(this string queryString)
     {
-        if (string.IsNullOrEmpty(queryString)) return new Dictionary<string, object>();
+        if (string.IsNullOrEmpty(queryString)) return [];
 
         var result = new Dictionary<string, object>();
 
