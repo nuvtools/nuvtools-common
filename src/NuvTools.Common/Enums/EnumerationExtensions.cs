@@ -82,13 +82,13 @@ public static class EnumerationExtensions
 
         dynamic enumerator;
         if (tipo == typeof(int))
-            enumerator = ((Enumerator<int>)value);
+            enumerator = ((EnumDescriptor<int>)value);
         else if (tipo == typeof(byte))
-            enumerator = ((Enumerator<byte>)value);
+            enumerator = ((EnumDescriptor<byte>)value);
         else if (tipo == typeof(short))
-            enumerator = ((Enumerator<short>)value);
+            enumerator = ((EnumDescriptor<short>)value);
         else
-            enumerator = ((Enumerator<long>)value);
+            enumerator = ((EnumDescriptor<long>)value);
 
         return enumerator;
     }
@@ -101,14 +101,14 @@ public static class EnumerationExtensions
     /// <returns>Enum item description.</returns>
     /// <exception cref="ArgumentNullException"></exception>
     /// <exception cref="InvalidCastException"></exception>
-    public static IEnumerator<TUEnum> GetEnumerator<TUEnum>(this Enum value) where TUEnum : IEquatable<TUEnum>
+    public static IEnumDescriptor<TUEnum> GetEnumerator<TUEnum>(this Enum value) where TUEnum : IEquatable<TUEnum>
     {
         if (value == null)
         {
             throw new ArgumentNullException(nameof(value));
         }
 
-        return (IEnumerator<TUEnum>)value;
+        return (IEnumDescriptor<TUEnum>)value;
     }
 
     /// <summary>
@@ -122,7 +122,9 @@ public static class EnumerationExtensions
     {
         var result = list.Aggregate("", (current, item) => current + GetValueAsString(item) + separator);
 
-        result = (result.Length > 0) ? result[..^1] : null;
+        if (result is null) return string.Empty;
+
+        result = (result.Length > 0) ? result[..^1] : string.Empty;
 
         return result;
     }
@@ -167,9 +169,9 @@ public static class EnumerationExtensions
         return result.Distinct();
     }
 
-    public static DisplayAttribute[] GetDisplayAttributes(this Enum value)
+    public static DisplayAttribute[]? GetDisplayAttributes(this Enum value)
     {
-        return (DisplayAttribute[])value.GetType().GetField(value.ToString()).GetCustomAttributes(typeof(DisplayAttribute), false);
+        return (DisplayAttribute[])value.GetType().GetField(value.ToString())!.GetCustomAttributes(typeof(DisplayAttribute), false);
     }
 
     /// <summary>
@@ -177,12 +179,13 @@ public static class EnumerationExtensions
     /// </summary>
     /// <param name="value">Enum with DisplayAttribute.</param>
     /// <returns></returns>
-    public static int GetOrder(this Enum value)
+    public static int? GetOrder(this Enum value)
     {
-        return value.GetType()
+        var displayAttribute = value.GetType()
        .GetMember(value.ToString()).First()
-       .GetCustomAttribute<DisplayAttribute>()
-       .Order;
+       .GetCustomAttribute<DisplayAttribute>();
+
+        return displayAttribute?.Order;
     }
 
     /// <summary>
@@ -190,11 +193,12 @@ public static class EnumerationExtensions
     /// </summary>
     /// <param name="value">Enum with DisplayAttribute.</param>
     /// <returns></returns>
-    public static string GetPrompt(this Enum value)
+    public static string? GetPrompt(this Enum value)
     {
-        return value.GetType()
+        var displayAttribute = value.GetType()
        .GetMember(value.ToString()).First()
-       .GetCustomAttribute<DisplayAttribute>()
-       .Prompt;
+       .GetCustomAttribute<DisplayAttribute>();
+
+        return displayAttribute?.Prompt;
     }
 }

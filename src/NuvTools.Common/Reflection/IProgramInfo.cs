@@ -2,8 +2,9 @@
 
 public interface IProgramInfo
 {
-    List<string> Components { get; }
-    string Description { get; }
     string Name { get; }
-    string Version { get; }
+    string? Description { get; }
+    
+    string? Version { get; }
+    List<string>? Components { get; }
 }

@@ -1,18 +1,31 @@
 ﻿namespace NuvTools.Common.ResultWrapper;
+
+/// <summary>
+/// Specifies the severity of a rule.
+/// </summary>
+public enum Severity
+{
+    Error,
+    Warning,
+    Information,
+    Critical
+}
+
 public enum ResultType
 {
     Success = 0,
     Error = 1,
-    Validation = 2
+    ValidationError = 2
 }
+
+public record MessageDetail(string Title, string? Detail = null, string? Code = null, Severity? Severity = null);
 
 public interface IResult
 {
-    List<string> Messages { get; set; }
+    List<MessageDetail> Messages { get; }
 
-    bool Succeeded { get; set; }
-
-    ResultType ResultType { get; set; }
+    bool Succeeded { get; }
+    ResultType ResultType { get; }
 }
 
 public interface IResult<out T> : IResult

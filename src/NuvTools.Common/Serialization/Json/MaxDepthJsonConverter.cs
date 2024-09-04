@@ -15,7 +15,7 @@ public class MaxDepthJsonConverter<T> : JsonConverter<T>
         this.maxDepth = maxDepth;
     }
 
-    public override T Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+    public override T? Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
     {
         using (JsonDocument doc = JsonDocument.ParseValue(ref reader))
         {
@@ -35,7 +35,7 @@ public class MaxDepthJsonConverter<T> : JsonConverter<T>
         Serialize(value, writer, options, 1);
     }
 
-    private void Serialize(object obj, Utf8JsonWriter writer, JsonSerializerOptions options, int currentDepth, bool isFromArray = false)
+    private void Serialize(object? obj, Utf8JsonWriter writer, JsonSerializerOptions options, int currentDepth, bool isFromArray = false)
     {
         if (obj == null)
         {

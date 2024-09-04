@@ -16,7 +16,7 @@ public static class StringExtensions
     /// <exception cref="ArgumentNullException"></exception>
     public static string Left(this string value, int length)
     {
-        if (string.IsNullOrEmpty(value)) throw new ArgumentNullException(nameof(value));
+        if (string.IsNullOrEmpty(value)) return value;
 
         length = Math.Abs(length);
 
@@ -32,7 +32,7 @@ public static class StringExtensions
     /// <exception cref="ArgumentNullException"></exception>
     public static string Right(this string value, int length)
     {
-        if (string.IsNullOrEmpty(value)) throw new ArgumentNullException(nameof(value));
+        if (string.IsNullOrEmpty(value)) return value;
 
         length = Math.Abs(length);
 
@@ -48,7 +48,7 @@ public static class StringExtensions
     /// <exception cref="ArgumentNullException"></exception>
     public static string Format(this string template, params object[] args)
     {
-        if (string.IsNullOrEmpty(template)) throw new ArgumentNullException(nameof(template));
+        ArgumentException.ThrowIfNullOrEmpty(template, nameof(template));
         return template.Format(null, args);
     }
 
@@ -60,9 +60,9 @@ public static class StringExtensions
     /// <param name="provider">An object that supplies culture-specific formatting information.</param>
     /// <returns>A copy of format in which the format items have been replaced by the string representation of the corresponding strings in args.</returns>
     /// <exception cref="ArgumentNullException"></exception>
-    public static string Format(this string template, IFormatProvider provider, params object[] args)
+    public static string Format(this string template, IFormatProvider? provider, params object[] args)
     {
-        if (string.IsNullOrEmpty(template)) throw new ArgumentNullException(nameof(template));
+        ArgumentException.ThrowIfNullOrEmpty(template, nameof(template));
         if (args == null || args.Length == 0) throw new ArgumentNullException(nameof(args));
 
         var dictionary = new Dictionary<string, object>();
@@ -81,9 +81,9 @@ public static class StringExtensions
     /// <param name="provider">An object that supplies culture-specific formatting information.</param>
     /// <returns>A copy of format in which the format items have been replaced by the string representation of the corresponding values in Dictionary.</returns>
     /// <exception cref="ArgumentNullException"></exception>
-    public static string Format(this string template, Dictionary<string, object> args, IFormatProvider provider = null)
+    public static string Format(this string template, Dictionary<string, object> args, IFormatProvider? provider = null)
     {
-        if (string.IsNullOrEmpty(template)) throw new ArgumentNullException(nameof(template));
+        ArgumentException.ThrowIfNullOrEmpty(template, nameof(template));
 
         if (args == null || args.Count == 0) throw new ArgumentNullException(nameof(args));
 
@@ -92,14 +92,14 @@ public static class StringExtensions
 
         if (templateTokens.Count == 0) return template;
 
-        var dicIndex = new Dictionary<int, object>();
+        var dicIndex = new Dictionary<int, object?>();
         var index = -1;
         foreach (var token in templateTokens)
         {
             index++;
             args.TryGetValue(token, out var valueDic);
 
-            if (valueDic == null) args.TryGetValue(index.ToString(), out valueDic);
+            if (valueDic is null) args.TryGetValue(index.ToString(), out valueDic);
 
             dicIndex.Add(index, valueDic);
 

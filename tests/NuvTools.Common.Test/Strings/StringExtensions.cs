@@ -47,7 +47,7 @@ namespace NuvTools.Common.Tests.Strings
 
             Assert.That(value.Format(variables) == value);
 
-            Assert.Throws<ArgumentNullException>(() => "".Format(new Dictionary<string, object>()));
+            Assert.Throws<ArgumentException>(() => "".Format(new Dictionary<string, object>()));
             Assert.Throws<ArgumentNullException>(() => value.Format(new Dictionary<string, object>()));
             Assert.Throws<ArgumentNullException>(() => value.Format(null, new CultureInfo("pt-BR")));
         }

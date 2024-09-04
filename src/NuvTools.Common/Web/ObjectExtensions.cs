@@ -2,7 +2,6 @@
 using System.Collections;
 using System.Globalization;
 using System.Text.Encodings.Web;
-using System.Text.Json;
 using System.Web;
 
 namespace NuvTools.Common.Web;
@@ -16,7 +15,7 @@ public static class ObjectExtensions
     /// <param name="obj">Object source to generate QueryString</param>
     /// <param name="uriBase">Uri base address</param>
     /// <returns></returns>
-    public static string GetQueryString<T>(this T obj, string uriBase = null) where T : class
+    public static string GetQueryString<T>(this T obj, string? uriBase = null) where T : class
     {
         ArgumentNullException.ThrowIfNull(obj);
 
@@ -34,32 +33,42 @@ public static class ObjectExtensions
         foreach (var item in properties)
         {
             var itemValue = item.GetValue(obj, null);
-            var itemType = itemValue.GetType();
+            var itemType = itemValue?.GetType();
+
+            if (itemType is null) continue;
 
             if (itemType.IsSimple())
             {
-                var value = itemType == typeof(DateTime) ?
-                            ((DateTime)itemValue).ToString("yyyy-MM-ddThh:mm:ss", CultureInfo.InvariantCulture)
-                            : itemValue.ToString();
+                if (itemValue is null) continue;
 
-                list.Add(new KeyValuePair<string, string>(item.Name, value));
+                var value = itemType == typeof(DateTime) ?
+                                ((DateTime)itemValue).ToString("yyyy-MM-ddThh:mm:ss", CultureInfo.InvariantCulture)
+                                : itemValue.ToString();
+
+                list.Add(new KeyValuePair<string, string>(item.Name, value!));
                 continue;
             }
 
             if (itemType.IsEnum)
             {
                 var enumValue = Convert.ChangeType(itemValue, Enum.GetUnderlyingType(itemType));
-                list.Add(new KeyValuePair<string, string>(item.Name, enumValue.ToString()));
+
+                if (enumValue is null) continue;
+
+                list.Add(new KeyValuePair<string, string>(item.Name, enumValue.ToString()!));
                 continue;
             }
 
             if (!itemType.IsArray && !itemType.IsList()) continue;
 
+
+            if (itemValue is null) continue;
+
             var listValue = (itemType.IsArray ? (Array)itemValue : (IEnumerable)itemValue).Cast<object>();
 
             if (!listValue.Any(e => e.GetType().IsSimple())) continue;
 
-            var a = listValue.Select(e => new KeyValuePair<string, string>(item.Name, e.ToString()));
+            var a = listValue.Select(e => new KeyValuePair<string, string>(item.Name, e.ToString()!));
 
             list.AddRange(a);
         }
@@ -93,7 +102,7 @@ public static class ObjectExtensions
         foreach (var item in parameters)
         {
             var keyValue = item.Split('=');
-            listAux.Add(new KeyValuePair<string, string>(HttpUtility.UrlDecode(keyValue[0]), keyValue.Length == 2 ? HttpUtility.UrlDecode(keyValue[1]) : null));
+            listAux.Add(new KeyValuePair<string, string>(HttpUtility.UrlDecode(keyValue[0]), keyValue.Length == 2 ? HttpUtility.UrlDecode(keyValue[1]) : string.Empty));
         }
 
         foreach (var item in listAux.GroupBy(e => e.Key))

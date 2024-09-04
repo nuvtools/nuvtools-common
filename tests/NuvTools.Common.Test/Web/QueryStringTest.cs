@@ -21,7 +21,7 @@ public class QueryStringTest
         public string Name { get; set; }
         public List<long> Codes { get; set; }
 
-        public EnumFake EnumFake { get; set; }
+        public EnumFake? EnumFake { get; set; }
     }
 
     [SetUp]
@@ -40,8 +40,8 @@ public class QueryStringTest
             Codes = new List<long> { 1, 2, 3 }
         };
 
-        var queryString = obj.GetQueryString("https://nuv.tools");
-        Assert.That(queryString, Is.EqualTo("https://nuv.tools?Id=1&Date=2023-01-01T12%3A00%3A00&Name=Hello%20World!&Codes=1&Codes=2&Codes=3"));
+        var queryString = obj.GetQueryString("https://nuvtools.com");
+        Assert.That(queryString, Is.EqualTo("https://nuvtools.com?Id=1&Date=2023-01-01T12%3A00%3A00&Name=Hello%20World!&Codes=1&Codes=2&Codes=3"));
     }
 
     [Test]
@@ -78,7 +78,7 @@ public class QueryStringTest
     [Test]
     public void ParseQueryString()
     {
-        var parsedQueryString = "https://nuv.tools?Id=1&Date=2023-01-01T12%3A00%3A00&Name=Hello%20World!&Codes=1&Codes=2&Codes=3&Exists".ParseQueryString();
+        var parsedQueryString = "https://nuvtools.com?Id=1&Date=2023-01-01T12%3A00%3A00&Name=Hello%20World!&Codes=1&Codes=2&Codes=3&Exists".ParseQueryString();
         Assert.That(parsedQueryString.Count, Is.EqualTo(6));
     }
 
@@ -92,7 +92,7 @@ public class QueryStringTest
     [Test]
     public void ParseQueryString3()
     {
-        var parsedQueryString = "https://nuv.tools/".ParseQueryString();
+        var parsedQueryString = "https://nuvtools.com/".ParseQueryString();
         Assert.That(parsedQueryString.Count, Is.EqualTo(1));
     }
 

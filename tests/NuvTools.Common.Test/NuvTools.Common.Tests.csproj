@@ -5,7 +5,7 @@
 		<IsPackable>false</IsPackable>
 		<Authors>Nuv Tools</Authors>
 		<Copyright>Copyright © 2024 Nuv Tools</Copyright>
-		<PackageProjectUrl>https://nuv.tools</PackageProjectUrl>
+		<PackageProjectUrl>https://nuvtools.com</PackageProjectUrl>
 		<SignAssembly>true</SignAssembly>
 		<AssemblyOriginatorKeyFile>NuvTools.Common.Tests.snk</AssemblyOriginatorKeyFile>
 	</PropertyGroup>
@@ -19,9 +19,9 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<PackageReference Include="NUnit" Version="4.1.0" />
-		<PackageReference Include="NUnit3TestAdapter" Version="4.5.0" />
-		<PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.9.0" />
+		<PackageReference Include="NUnit" Version="4.2.2" />
+		<PackageReference Include="NUnit3TestAdapter" Version="4.6.0" />
+		<PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.11.0" />
 	</ItemGroup>
 
 	<ItemGroup>

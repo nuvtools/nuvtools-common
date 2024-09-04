@@ -11,7 +11,7 @@ public static class ObjectExtensions
     /// <param name="value">Value to be copied.</param>
     /// <param name="totalLevel">Quantity of levels to be copied.</param>
     /// <returns></returns>
-    public static T Clone<T>(this T value, int totalLevel = 1) => value.Serialize(totalLevel).Deserialize<T>();
+    public static T? Clone<T>(this T value, int totalLevel = 1) => value.Serialize(totalLevel).Deserialize<T>();
 
     private static JsonSerializerOptions GetOptions<T>(int totalLevel = 1) => new()
     {
@@ -37,7 +37,7 @@ public static class ObjectExtensions
     /// <param name="serializedValue">Serialized string (Json) to be deserialized.</param>
     /// <param name="totalLevel">Quantity of levels to be deserialized. Default: 0 - Will returns all levels.</param>
     /// <returns></returns>
-    public static T Deserialize<T>(this string serializedValue, int totalLevel = 0)
+    public static T? Deserialize<T>(this string serializedValue, int totalLevel = 0)
     {
         var obj = JsonSerializer.Deserialize<T>(serializedValue);
         if (totalLevel == 0) return obj;

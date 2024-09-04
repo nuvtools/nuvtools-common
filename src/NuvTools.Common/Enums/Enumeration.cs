@@ -1,18 +1,27 @@
-
-using System;
-using System.Collections.Generic;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
-using System.Linq;
 using System.Reflection;
-using System.Xml.Linq;
 
 namespace NuvTools.Common.Enums;
+
 /// <summary>
 /// Helpers to interact with the Enumerations. 
 /// </summary>
 public static class Enumeration
 {
+
+    public static IEnumDescriptor ToEnumDescriptor(this IEnumDescriptor<int> descriptor)
+    {
+        return new EnumDescriptor(descriptor.Id)
+        {
+            ShortName = descriptor.ShortName,
+            Name = descriptor.Name,
+            Description = descriptor.Description,
+            GroupName = descriptor.GroupName,
+            Order = descriptor.Order,
+            EnumeratorType = descriptor.EnumeratorType
+        };
+    }
 
     /// <summary>
     /// Returns the typed value according with the input value or name of enum.
@@ -46,7 +55,7 @@ public static class Enumeration
     public static TEnum GetEnum<TEnum, TUEnum>(TUEnum value) where TEnum : Enum
                                                                 where TUEnum : IEquatable<TUEnum>
     {
-        var result = (TEnum)Enum.Parse(typeof(TEnum), value.ToString(), true);
+        var result = (TEnum)Enum.Parse(typeof(TEnum), value.ToString()!, true);
 
         if (!Enum.IsDefined(typeof(TEnum), result))
             throw new IndexOutOfRangeException(value.ToString());
@@ -62,7 +71,7 @@ public static class Enumeration
     /// <returns>Enum item from value.</returns>
     public static Enum GetEnum(Type enumType, object value)
     {
-        var result = (Enum)Enum.Parse(enumType, value.ToString(), true);
+        var result = (Enum)Enum.Parse(enumType, value.ToString()!, true);
 
         if (!Enum.IsDefined(enumType, result))
             throw new IndexOutOfRangeException(value.ToString());
@@ -111,7 +120,7 @@ public static class Enumeration
     /// <param name="name"></param>
     /// <param name="description">Enum description (annotation).</param>
     /// <returns>Enum value</returns>
-    private static TEnum GetEnumByProperties<TEnum>(string shortName = null, string name = null, string description = null) where TEnum : Enum
+    private static TEnum GetEnumByProperties<TEnum>(string? shortName = null, string? name = null, string? description = null) where TEnum : Enum
     {
         if (shortName == null
             && name == null
@@ -136,9 +145,9 @@ public static class Enumeration
     /// <typeparam name="T">Enumerator type.</typeparam>
     /// <param name="sortByDescription">Sort the list using the description field.</param>
     /// <returns>Generic list corresponding to the enumerator.</returns>
-    public static List<IEnumerator> ToList<T>(bool sortByDescription = false) where T : Enum
+    public static List<IEnumDescriptor> ToList<T>(bool sortByDescription = false) where T : Enum
     {
-        return ToList<T, int>(sortByDescription).Select(e => new Enumerator(e)).Cast<IEnumerator>().ToList();
+        return ToList<T, int>(sortByDescription).Select(e => e.ToEnumDescriptor()).ToList();
     }
 
     /// <summary>
@@ -149,19 +158,19 @@ public static class Enumeration
     /// <param name="sortByDescription">Sort the list using the description field.</param>
     /// <returns>Generic list corresponding to the enumerator.</returns>
     /// <exception cref="InvalidCastException"></exception>
-    public static List<IEnumerator<TKey>> ToList<T, TKey>(bool sortByDescription = false) where T : Enum
-                                                                                            where TKey : IEquatable<TKey>
+    public static List<IEnumDescriptor<TKey>> ToList<T, TKey>(bool sortByDescription = false) where T : Enum
+                                                                                                where TKey : IEquatable<TKey>
     {
         var enumValues = GetListValues<T>();
 
-        var list = enumValues.Select(e => (Enumerator<TKey>)e);
+        var list = enumValues.Select(e => (EnumDescriptor<TKey>)e);
 
         if (sortByDescription)
             list = list.OrderBy(e => e.Description);
         else
             list = list.OrderBy(e => e.Order);
 
-        return list.Cast<IEnumerator<TKey>>().ToList();
+        return list.OfType<IEnumDescriptor<TKey>>().ToList();
     }
 
     /// <summary>
@@ -196,11 +205,10 @@ public static class Enumeration
 
         foreach (var e in enumList)
         {
-            var obj = (TClass)Activator.CreateInstance(typeof(TClass));
+            if (Activator.CreateInstance(typeof(TClass)) is not TClass obj) continue;
 
-            obj.GetType().GetRuntimeProperty(idField).SetValue(obj, e.Id, null);
-            obj.GetType().GetRuntimeProperty(descriptionField).SetValue(obj, e.Description, null);
-
+            obj.GetType().GetRuntimeProperty(idField)?.SetValue(obj, e.Id, null);
+            obj.GetType().GetRuntimeProperty(descriptionField)?.SetValue(obj, e.Description, null);
             list.Add(obj);
         }
 
