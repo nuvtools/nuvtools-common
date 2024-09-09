@@ -10,7 +10,7 @@
 		<SignAssembly>True</SignAssembly>
 		<AssemblyOriginatorKeyFile>NuvTools.Common.snk</AssemblyOriginatorKeyFile>
 		<Description>Common library for Web, Desktop and Mobile (MAUI) applications.</Description>
-		<Version>8.1.0</Version>
+		<Version>8.1.2</Version>
 		<GenerateDocumentationFile>True</GenerateDocumentationFile>
 		<EnforceCodeStyleInBuild>True</EnforceCodeStyleInBuild>
 		<PackageIcon>icon.png</PackageIcon>

@@ -5,7 +5,6 @@ using System.Text.Json.Serialization;
 namespace NuvTools.Common.ResultWrapper;
 public static class ResultExtensions
 {
-
     private static readonly JsonSerializerOptions serializerOptions = new()
     {
         PropertyNameCaseInsensitive = true,
