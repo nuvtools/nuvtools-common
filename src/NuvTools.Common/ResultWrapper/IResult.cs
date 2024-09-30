@@ -25,6 +25,8 @@ public interface IResult
     List<MessageDetail> Messages { get; }
 
     bool Succeeded { get; }
+    bool ContainsNotFound { get; }
+
     ResultType ResultType { get; }
 }
 

@@ -56,6 +56,10 @@ public class ResultTests
 
         Assert.That(result.Messages[0].Title, Is.EqualTo("Not work"));
 
+
+        var notfound = Result.FailNotFound("Not found");
+        Assert.That(notfound.Messages[0].Code, Is.EqualTo("404"));
+        Assert.That(notfound.ContainsNotFound);
     }
 
     [Test()]
@@ -63,6 +67,10 @@ public class ResultTests
     {
         var resultTyped = Result<int>.Fail("Not work");
         Assert.That(resultTyped.Messages[0].Title, Is.EqualTo("Not work"));
+
+        var notfound = Result<int>.FailNotFound("Not found");
+        Assert.That(notfound.Messages[0].Code, Is.EqualTo("404"));
+        Assert.That(notfound.ContainsNotFound);
     }
 
     [Test()]

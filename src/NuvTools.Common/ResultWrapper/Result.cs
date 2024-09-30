@@ -5,6 +5,9 @@ namespace NuvTools.Common.ResultWrapper;
 public class Result : IResult
 {
     public bool Succeeded { get; set; }
+
+    public bool ContainsNotFound { get; set; }
+
     public ResultType ResultType { get; set; } = ResultType.Success;
     public List<MessageDetail> Messages { get; set; } = [];
 
@@ -41,13 +44,21 @@ public class Result : IResult
     private static Result CreateResult(ResultType resultType, List<MessageDetail>? messages = null, ILogger? logger = null)
     {
         Log(messages, logger);
-        return new Result { Succeeded = resultType == ResultType.Success, ResultType = resultType, Messages = messages ?? [] };
+        return new Result
+        {
+            Succeeded = resultType == ResultType.Success,
+            ContainsNotFound = resultType != ResultType.Success
+                                && messages != null && messages.Any(e => e.Code == "404"),
+            ResultType = resultType,
+            Messages = messages ?? []
+        };
     }
 
     public static IResult Fail(List<MessageDetail>? messages = null, ILogger? logger = null) => CreateResult(ResultType.Error, messages, logger);
     public static IResult Fail(List<string> messages, ILogger? logger = null) => Fail(ConvertToMessageDetail(messages), logger);
     public static IResult Fail(string message, ILogger? logger = null) => Fail([message], logger);
     public static IResult Fail(MessageDetail message, ILogger? logger = null) => Fail([message], logger);
+    public static IResult FailNotFound(string message) => Fail(new MessageDetail(message, Code: "404"));
 
     public static IResult ValidationFail(List<MessageDetail> messages, ILogger? logger = null) => CreateResult(ResultType.ValidationError, messages, logger);
     public static IResult ValidationFail(List<string> messages, ILogger? logger = null) => ValidationFail(ConvertToMessageDetail(messages), logger);
@@ -65,13 +76,22 @@ public class Result<T> : Result, IResult<T>
     private static Result<T> CreateResult(ResultType resultType, T? data = default, List<MessageDetail>? messages = null, ILogger? logger = null)
     {
         Log(messages, logger);
-        return new Result<T> { Succeeded = resultType == ResultType.Success, ResultType = resultType, Data = data, Messages = messages ?? [] };
+        return new Result<T>
+        {
+            Succeeded = resultType == ResultType.Success,
+            ContainsNotFound = resultType != ResultType.Success
+                                && messages != null && messages.Any(e => e.Code == "404"),
+            ResultType = resultType,
+            Data = data,
+            Messages = messages ?? []
+        };
     }
 
     public static IResult<T> Fail(List<MessageDetail>? messages = null, T? data = default, ILogger? logger = null) => CreateResult(ResultType.Error, data, messages, logger);
     public static IResult<T> Fail(List<string> messages, T? data = default, ILogger? logger = null) => Fail(ConvertToMessageDetail(messages), data, logger);
     public static IResult<T> Fail(MessageDetail message, T? data = default, ILogger? logger = null) => Fail([message], data, logger);
     public static IResult<T> Fail(string message, T? data = default, ILogger? logger = null) => Fail([new MessageDetail(message)], data, logger);
+    public static new IResult<T> FailNotFound(string message) => Fail(new MessageDetail(message, Code: "404"));
 
     public static IResult<T> ValidationFail(List<MessageDetail> messages, T? data = default, ILogger? logger = null) => CreateResult(ResultType.ValidationError, data, messages, logger);
     public static IResult<T> ValidationFail(List<string> messages, T? data = default, ILogger? logger = null) => ValidationFail(ConvertToMessageDetail(messages), data, logger);
