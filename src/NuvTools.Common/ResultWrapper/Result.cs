@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.Logging;
+using NuvTools.Common.Exceptions;
 
 namespace NuvTools.Common.ResultWrapper;
 
@@ -58,6 +59,8 @@ public class Result : IResult
     public static IResult Fail(List<string> messages, ILogger? logger = null) => Fail(ConvertToMessageDetail(messages), logger);
     public static IResult Fail(string message, ILogger? logger = null) => Fail([message], logger);
     public static IResult Fail(MessageDetail message, ILogger? logger = null) => Fail([message], logger);
+    public static IResult Fail(Exception exception, short level = 1, ILogger? logger = null) => Fail([exception.AggregateExceptionMessages(level)], logger);
+
     public static IResult FailNotFound(string message) => Fail(new MessageDetail(message, Code: "404"));
 
     public static IResult ValidationFail(List<MessageDetail> messages, ILogger? logger = null) => CreateResult(ResultType.ValidationError, messages, logger);
@@ -91,6 +94,7 @@ public class Result<T> : Result, IResult<T>
     public static IResult<T> Fail(List<string> messages, T? data = default, ILogger? logger = null) => Fail(ConvertToMessageDetail(messages), data, logger);
     public static IResult<T> Fail(MessageDetail message, T? data = default, ILogger? logger = null) => Fail([message], data, logger);
     public static IResult<T> Fail(string message, T? data = default, ILogger? logger = null) => Fail([new MessageDetail(message)], data, logger);
+    public static IResult<T> Fail(Exception exception, short level = 1, T? data = default, ILogger? logger = null) => Fail([new MessageDetail(exception.AggregateExceptionMessages(level))], data, logger);
     public static new IResult<T> FailNotFound(string message) => Fail(new MessageDetail(message, Code: "404"));
 
     public static IResult<T> ValidationFail(List<MessageDetail> messages, T? data = default, ILogger? logger = null) => CreateResult(ResultType.ValidationError, data, messages, logger);
