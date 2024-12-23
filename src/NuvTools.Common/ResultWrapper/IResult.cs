@@ -24,6 +24,10 @@ public interface IResult
 {
     List<MessageDetail> Messages { get; }
 
+    MessageDetail? MessageDetail { get; }
+
+    string? Message { get; }
+
     bool Succeeded { get; }
     bool ContainsNotFound { get; }
 

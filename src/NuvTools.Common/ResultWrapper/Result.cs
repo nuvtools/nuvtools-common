@@ -12,6 +12,11 @@ public class Result : IResult
     public ResultType ResultType { get; set; } = ResultType.Success;
     public List<MessageDetail> Messages { get; set; } = [];
 
+    public MessageDetail? MessageDetail => Messages.Count > 0 ? Messages[0] : null;
+
+    public string? Message => MessageDetail == null ? null
+                                                    : $"{MessageDetail.Title}{(MessageDetail.Detail != null ? $" - {MessageDetail.Detail}" : string.Empty)}";
+
     protected static void Log(List<MessageDetail>? messages, ILogger? logger)
     {
         if (logger == null || messages == null) return;
