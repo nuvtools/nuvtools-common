@@ -117,6 +117,21 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
+  <data name="CannotConvertNullToNonNullableTypeX" xml:space="preserve">
+    <value>Cannot convert null to non-nullable type {0}.</value>
+  </data>
+  <data name="ExpectedDateString" xml:space="preserve">
+    <value>Expected a date string.</value>
+  </data>
+  <data name="MaxDepthMustBeGreaterThanZero" xml:space="preserve">
+    <value>MaxDepth must be greater than zero.</value>
+  </data>
+  <data name="TheJSONDataMustBeAnObjectAtTheRoot" xml:space="preserve">
+    <value>The JSON data must be an object at the root.</value>
+  </data>
+  <data name="UnsupportedTypeX" xml:space="preserve">
+    <value>Unsupported type {0}</value>
+  </data>
   <data name="ValueOutsideRange" xml:space="preserve">
     <value>Value outside range</value>
   </data>

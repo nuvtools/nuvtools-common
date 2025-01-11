@@ -120,4 +120,19 @@
   <data name="ValueOutsideRange" xml:space="preserve">
     <value>Valor fora da faixa</value>
   </data>
+  <data name="UnsupportedTypeX" xml:space="preserve">
+    <value>Tipo {0} não suportado</value>
+  </data>
+  <data name="ExpectedDateString" xml:space="preserve">
+    <value>Texto em formato data esperado.</value>
+  </data>
+  <data name="MaxDepthMustBeGreaterThanZero" xml:space="preserve">
+    <value>MaxDepth deve ser maior do que zero.</value>
+  </data>
+  <data name="TheJSONDataMustBeAnObjectAtTheRoot" xml:space="preserve">
+    <value>O conteúdo do JSON deve ser a raiz de um objeto.</value>
+  </data>
+  <data name="CannotConvertNullToNonNullableTypeX" xml:space="preserve">
+    <value>Não é possível converter o valor nulo para o tipo não nulo {0}.</value>
+  </data>
 </root>

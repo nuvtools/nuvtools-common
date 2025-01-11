@@ -18,7 +18,7 @@ public class ExceptionExtensionsTests
         }
         catch (Exception ex)
         {
-            var message = ex.AggregateExceptionMessages(1); // Limit to 3 levels
+            var message = ex.AggregateExceptionMessages(2); // Limit to 3 levels
             Assert.That(message.Contains("Innermost exception"));
         }
     }

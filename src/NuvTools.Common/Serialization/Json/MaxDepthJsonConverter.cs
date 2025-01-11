@@ -1,18 +1,20 @@
 ﻿using System.Text.Json;
 using System.Text.Json.Serialization;
 using System.Collections;
+using System.Reflection;
+using NuvTools.Common.Resources;
 
 namespace NuvTools.Common.Serialization.Json;
 public class MaxDepthJsonConverter<T> : JsonConverter<T>
 {
-    private readonly int maxDepth;
+    private readonly int _maxDepth;
 
     public MaxDepthJsonConverter(int maxDepth)
     {
         if (maxDepth <= 0)
-            throw new ArgumentOutOfRangeException(nameof(maxDepth), "MaxDepth must be greater than zero.");
+            throw new ArgumentOutOfRangeException(nameof(maxDepth), Messages.MaxDepthMustBeGreaterThanZero);
 
-        this.maxDepth = maxDepth;
+        this._maxDepth = maxDepth;
     }
 
     public override T? Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
@@ -23,7 +25,7 @@ public class MaxDepthJsonConverter<T> : JsonConverter<T>
 
             if (jsonElement.ValueKind != JsonValueKind.Object)
             {
-                throw new JsonException($"The JSON data must be an object at the root.");
+                throw new JsonException(Messages.TheJSONDataMustBeAnObjectAtTheRoot);
             }
 
             return JsonSerializer.Deserialize<T>(jsonElement);
@@ -35,7 +37,7 @@ public class MaxDepthJsonConverter<T> : JsonConverter<T>
         Serialize(value, writer, options, 1);
     }
 
-    private void Serialize(object? obj, Utf8JsonWriter writer, JsonSerializerOptions options, int currentDepth, bool isFromArray = false)
+    private void Serialize(object? obj, Utf8JsonWriter writer, JsonSerializerOptions options, int currentDepth, bool isFromArray = false, PropertyInfo? propertyInfo = null)
     {
         if (obj == null)
         {
@@ -47,6 +49,9 @@ public class MaxDepthJsonConverter<T> : JsonConverter<T>
 
         if (objectType.IsSimple())
         {
+            if (TryUseCustomConverter(obj, writer, options, objectType, propertyInfo))
+                return;
+
             JsonSerializer.Serialize(writer, obj, options);
             return;
         }
@@ -57,7 +62,7 @@ public class MaxDepthJsonConverter<T> : JsonConverter<T>
             return;
         }
 
-        if (currentDepth > maxDepth)
+        if (currentDepth > _maxDepth)
         {
             writer.WriteNullValue();
             return; // Reached the maximum depth, stop serialization.
@@ -82,10 +87,33 @@ public class MaxDepthJsonConverter<T> : JsonConverter<T>
         {
             writer.WritePropertyName(property.Name);
             var value = property.GetValue(obj);
-            Serialize(value, writer, options, currentDepth + 1);
+            Serialize(value, writer, options, currentDepth + 1, propertyInfo: property);
         }
 
         writer.WriteEndObject();
+    }
+
+    /// <summary>
+    /// Attempts to use a custom converter if one is defined on the property.
+    /// </summary>
+    private bool TryUseCustomConverter(object obj, Utf8JsonWriter writer, JsonSerializerOptions options, Type objectType, PropertyInfo? propertyInfo)
+    {
+        if (propertyInfo == null)
+            return false;
+
+        var customConverterAttribute = propertyInfo.GetCustomAttribute<JsonConverterAttribute>();
+        if (customConverterAttribute == null)
+            return false;
+
+        var customConverter = customConverterAttribute.CreateConverter(objectType);
+        if (customConverter == null)
+            return false;
+
+        customConverter.GetType()
+            .GetMethod(nameof(JsonConverter<object>.Write))
+            ?.Invoke(customConverter, [writer, obj, options]);
+
+        return true;
     }
 }
 

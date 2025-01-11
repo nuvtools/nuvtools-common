@@ -61,6 +61,51 @@ namespace NuvTools.Common.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Cannot convert null to non-nullable type {0}..
+        /// </summary>
+        public static string CannotConvertNullToNonNullableTypeX {
+            get {
+                return ResourceManager.GetString("CannotConvertNullToNonNullableTypeX", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Expected a date string..
+        /// </summary>
+        public static string ExpectedDateString {
+            get {
+                return ResourceManager.GetString("ExpectedDateString", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to MaxDepth must be greater than zero..
+        /// </summary>
+        public static string MaxDepthMustBeGreaterThanZero {
+            get {
+                return ResourceManager.GetString("MaxDepthMustBeGreaterThanZero", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The JSON data must be an object at the root..
+        /// </summary>
+        public static string TheJSONDataMustBeAnObjectAtTheRoot {
+            get {
+                return ResourceManager.GetString("TheJSONDataMustBeAnObjectAtTheRoot", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Unsupported type {0}.
+        /// </summary>
+        public static string UnsupportedTypeX {
+            get {
+                return ResourceManager.GetString("UnsupportedTypeX", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Value outside range.
         /// </summary>
         public static string ValueOutsideRange {
