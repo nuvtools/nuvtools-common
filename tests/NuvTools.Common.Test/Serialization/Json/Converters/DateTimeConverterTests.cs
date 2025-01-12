@@ -8,31 +8,31 @@ namespace NuvTools.Common.Tests.Serialization.Json.Converters;
 
 class ModelConverterTest
 {
-    [DateTimeConverter("dd/MM/yyyy")]
+    [DateTimeJsonConverter("dd/MM/yyyy")]
     public DateTime DateOutside { get; set; }
 
-    [DateTimeConverter("dd/MM/yyyy")]
+    [DateTimeJsonConverter("dd/MM/yyyy")]
     public DateTimeOffset DateOutsideOffset { get; set; }
 
-    [DateTimeConverter("yyyy-MM-dd")]
+    [DateTimeJsonConverter("yyyy-MM-dd")]
     public DateTime? DateOutsideOption2 { get; set; }
 
-    [DateTimeConverter("yyyy-MM-dd HH:mm")]
+    [DateTimeJsonConverter("yyyy-MM-dd HH:mm")]
     public DateTimeOffset? DateOutsideOffsetOption2 { get; set; }
 
-    [DateTimeConverter("yyyy-MM-dd")]
+    [DateTimeJsonConverter("yyyy-MM-dd")]
     public DateTime? DateOutsideEmpty { get; set; }
 
-    [DateTimeConverter("yyyy-MM-dd")]
+    [DateTimeJsonConverter("yyyy-MM-dd")]
     public DateTimeOffset? DateOutsideOffsetEmpty { get; set; }
 }
 
 class ModelConverterErrorTest
 {
-    [DateTimeConverter("dd/MM/yyyy")]
+    [DateTimeJsonConverter("dd/MM/yyyy")]
     public int Number { get; set; }
 
-    [DateTimeConverter("dd/MM/yyyy")]
+    [DateTimeJsonConverter("dd/MM/yyyy")]
     public string Text { get; set; }
 }
 

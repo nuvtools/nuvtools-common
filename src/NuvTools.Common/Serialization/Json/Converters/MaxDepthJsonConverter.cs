@@ -3,8 +3,9 @@ using System.Text.Json.Serialization;
 using System.Collections;
 using System.Reflection;
 using NuvTools.Common.Resources;
+using NuvTools.Common.Serialization.Json;
 
-namespace NuvTools.Common.Serialization.Json;
+namespace NuvTools.Common.Serialization.Json.Converters;
 public class MaxDepthJsonConverter<T> : JsonConverter<T>
 {
     private readonly int _maxDepth;
@@ -14,7 +15,7 @@ public class MaxDepthJsonConverter<T> : JsonConverter<T>
         if (maxDepth <= 0)
             throw new ArgumentOutOfRangeException(nameof(maxDepth), Messages.MaxDepthMustBeGreaterThanZero);
 
-        this._maxDepth = maxDepth;
+        _maxDepth = maxDepth;
     }
 
     public override T? Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
@@ -28,7 +29,7 @@ public class MaxDepthJsonConverter<T> : JsonConverter<T>
                 throw new JsonException(Messages.TheJSONDataMustBeAnObjectAtTheRoot);
             }
 
-            return JsonSerializer.Deserialize<T>(jsonElement);
+            return jsonElement.Deserialize<T>();
         }
     }
 

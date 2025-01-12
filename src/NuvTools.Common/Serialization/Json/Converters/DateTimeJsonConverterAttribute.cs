@@ -5,16 +5,16 @@ using System.Text.Json.Serialization;
 namespace NuvTools.Common.Serialization.Json.Converters;
 
 [AttributeUsage(AttributeTargets.Property | AttributeTargets.Field, AllowMultiple = false)]
-public class DateTimeConverterAttribute(string format) : JsonConverterAttribute
+public class DateTimeJsonConverterAttribute(string format) : JsonConverterAttribute
 {
     public override JsonConverter CreateConverter(Type typeToConvert)
     {
         return typeToConvert switch
         {
             { } when typeToConvert == typeof(DateTime) || typeToConvert == typeof(DateTime?)
-                => new DateTimeConverter<DateTime>(format),
+                => new DateTimeJsonConverter<DateTime>(format),
             { } when typeToConvert == typeof(DateTimeOffset) || typeToConvert == typeof(DateTimeOffset?)
-                => new DateTimeConverter<DateTimeOffset>(format),
+                => new DateTimeJsonConverter<DateTimeOffset>(format),
             _ => throw new NotSupportedException(Messages.UnsupportedTypeX.Format(typeToConvert!))
         };
     }

@@ -5,7 +5,7 @@ using System.Text.Json.Serialization;
 
 namespace NuvTools.Common.Serialization.Json.Converters;
 
-public class DateTimeConverter<T>(string format) : JsonConverter<T> where T : struct
+public class DateTimeJsonConverter<T>(string format) : JsonConverter<T> where T : struct
 {
     private readonly string _format = format ?? throw new ArgumentNullException(nameof(format));
 
