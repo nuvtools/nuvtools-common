@@ -88,5 +88,11 @@ namespace NuvTools.Common.Tests.Strings
         {
             Assert.That("Sáo Pãulo".RemoveDiacritics() == "Sao Paulo");
         }
+
+        [Test()]
+        public void GetNumbersOnlyTest()
+        {
+            Assert.That("(555) 333-4444".GetNumbersOnly() == "5553334444");
+        }
     }
 }

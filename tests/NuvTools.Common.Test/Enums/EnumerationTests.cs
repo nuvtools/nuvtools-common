@@ -150,6 +150,22 @@ public class EnumerationTests
     }
 
     [Test()]
+    public void ToListShortWithSortTest()
+    {
+        var list = Enumeration.ToList<FormatTypeShort, short>(true);
+
+        Assert.That(list != null);
+        Assert.That(list[0].Id.GetType() == typeof(short));
+        Assert.That("excel" == list[0].Description); //sorted
+
+        //Using display
+        Assert.That("More than one" == list[2].Description);
+        Assert.That("Should take this" == list[2].GroupName);
+
+        Assert.That("word" == list[3].Name);
+    }
+
+    [Test()]
     public void ToListLongTest()
     {
         var list = Enumeration.ToList<FormatTypeLong, long>(false);

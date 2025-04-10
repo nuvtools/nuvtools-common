@@ -5,7 +5,7 @@ using System.Text.RegularExpressions;
 
 namespace NuvTools.Common.Strings;
 
-public static class StringExtensions
+public static partial class StringExtensions
 {
     /// <summary>
     /// Gets the first characters from string.
@@ -208,4 +208,12 @@ public static class StringExtensions
             return false;
         }
     }
+
+    public static string GetNumbersOnly(this string value)
+    {
+        return NonDigitRegex().Replace(value, string.Empty);
+    }
+
+    [GeneratedRegex(@"\D", RegexOptions.IgnoreCase | RegexOptions.CultureInvariant)]
+    private static partial Regex NonDigitRegex();
 }
