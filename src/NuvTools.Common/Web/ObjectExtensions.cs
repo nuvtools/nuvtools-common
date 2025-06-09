@@ -1,6 +1,5 @@
 ﻿using NuvTools.Common.Serialization;
 using System.Collections;
-using System.Globalization;
 using System.Text.Encodings.Web;
 using System.Web;
 
@@ -17,65 +16,60 @@ public static class ObjectExtensions
     /// <returns></returns>
     public static string GetQueryString<T>(this T obj, string? uriBase = null) where T : class
     {
-        ArgumentNullException.ThrowIfNull(obj);
+        ArgumentNullException.ThrowIfNull(obj, nameof(obj));
+        uriBase ??= string.Empty;
 
-        if (string.IsNullOrEmpty(uriBase)) uriBase = string.Empty;
-
-        var properties = from p in obj.GetType().GetProperties()
-                         where p.GetValue(obj, null) != null
-                         select p;
+        var properties = obj.GetType()
+            .GetProperties()
+            .Where(p => p.GetValue(obj, null) != null)
+            .ToList();
 
         if (!properties.Any())
             return uriBase;
 
-        var list = new List<KeyValuePair<string, string>>();
+        var queryParams = new List<KeyValuePair<string, string>>();
 
-        foreach (var item in properties)
+        foreach (var property in properties)
         {
-            var itemValue = item.GetValue(obj, null);
-            var itemType = itemValue?.GetType();
-
-            if (itemType is null) continue;
-
-            if (itemType.IsSimple())
-            {
-                if (itemValue is null) continue;
-
-                var value = itemType == typeof(DateTime) ?
-                                ((DateTime)itemValue).ToString("yyyy-MM-ddThh:mm:ss", CultureInfo.InvariantCulture)
-                                : itemValue.ToString();
-
-                list.Add(new KeyValuePair<string, string>(item.Name, value!));
+            var value = property.GetValue(obj, null);
+            if (value == null)
                 continue;
-            }
 
-            if (itemType.IsEnum)
+            var type = value.GetType();
+
+            if (type == typeof(DateTimeOffset))
             {
-                var enumValue = Convert.ChangeType(itemValue, Enum.GetUnderlyingType(itemType));
-
-                if (enumValue is null) continue;
-
-                list.Add(new KeyValuePair<string, string>(item.Name, enumValue.ToString()!));
-                continue;
+                var dateTimeOffset = (DateTimeOffset)value;
+                queryParams.Add(new KeyValuePair<string, string>(property.Name, dateTimeOffset.UtcDateTime.ToString("yyyy-MM-ddTHH:mm:ss")));
+                queryParams.Add(new KeyValuePair<string, string>($"{property.Name}Offset", dateTimeOffset.Offset.ToString(@"hh\:mm")));
             }
+            else if (type == typeof(DateTime))
+            {
+                var dateTime = (DateTime)value;
+                queryParams.Add(new KeyValuePair<string, string>(property.Name, dateTime.ToString("yyyy-MM-ddTHH:mm:ss")));
+            }
+            else if (type.IsSimple() || type.IsEnum)
+            {
+                var simpleValue = type.IsEnum
+                    ? Convert.ChangeType(value, Enum.GetUnderlyingType(type)).ToString()
+                    : value.ToString();
 
-            if (!itemType.IsArray && !itemType.IsList()) continue;
-
-
-            if (itemValue is null) continue;
-
-            var listValue = (itemType.IsArray ? (Array)itemValue : (IEnumerable)itemValue).Cast<object>();
-
-            if (!listValue.Any(e => e.GetType().IsSimple())) continue;
-
-            var a = listValue.Select(e => new KeyValuePair<string, string>(item.Name, e.ToString()!));
-
-            list.AddRange(a);
+                queryParams.Add(new KeyValuePair<string, string>(property.Name, simpleValue!));
+            }
+            else if (type.IsArray || type.IsList())
+            {
+                var enumerable = ((IEnumerable)value).Cast<object>();
+                foreach (var item in enumerable)
+                {
+                    if (item.GetType().IsSimple())
+                    {
+                        queryParams.Add(new KeyValuePair<string, string>(property.Name, item.ToString()!));
+                    }
+                }
+            }
         }
 
-        var result = $"{uriBase}?{string.Join('&', list.Select(e => $"{UrlEncoder.Default.Encode(e.Key)}={UrlEncoder.Default.Encode(e.Value)}"))}";
-
-        return result;
+        return uriBase + "?" + string.Join('&', queryParams.Select(e => UrlEncoder.Default.Encode(e.Key) + "=" + UrlEncoder.Default.Encode(e.Value)));
     }
 
 
