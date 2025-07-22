@@ -14,7 +14,7 @@ public static partial class StringExtensions
     /// <param name="length">The number of characters to be extracted.</param>
     /// <returns></returns>
     /// <exception cref="ArgumentNullException"></exception>
-    public static string Left(this string value, int length)
+    public static string? Left(this string? value, int length)
     {
         if (string.IsNullOrEmpty(value)) return value;
 
@@ -30,7 +30,7 @@ public static partial class StringExtensions
     /// <param name="length">The number of characters to be extracted.</param>
     /// <returns></returns>
     /// <exception cref="ArgumentNullException"></exception>
-    public static string Right(this string value, int length)
+    public static string? Right(this string? value, int length)
     {
         if (string.IsNullOrEmpty(value)) return value;
 
@@ -46,7 +46,7 @@ public static partial class StringExtensions
     /// <param name="args">A string array that contains zero or more objects to format.</param>
     /// <returns>A copy of format in which the format items have been replaced by the string representation of the corresponding strings in args.</returns>
     /// <exception cref="ArgumentNullException"></exception>
-    public static string Format(this string template, params object[] args)
+    public static string Format(this string template, params object?[] args)
     {
         ArgumentException.ThrowIfNullOrEmpty(template, nameof(template));
         return template.Format(null, args);
@@ -60,12 +60,12 @@ public static partial class StringExtensions
     /// <param name="provider">An object that supplies culture-specific formatting information.</param>
     /// <returns>A copy of format in which the format items have been replaced by the string representation of the corresponding strings in args.</returns>
     /// <exception cref="ArgumentNullException"></exception>
-    public static string Format(this string template, IFormatProvider? provider, params object[] args)
+    public static string Format(this string template, IFormatProvider? provider, params object?[] args)
     {
         ArgumentException.ThrowIfNullOrEmpty(template, nameof(template));
         if (args == null || args.Length == 0) throw new ArgumentNullException(nameof(args));
 
-        var dictionary = new Dictionary<string, object>();
+        var dictionary = new Dictionary<string, object?>();
 
         for (int i = 0; i < args.Length; i++)
             dictionary.Add(i.ToString(), args[i]);
@@ -81,7 +81,7 @@ public static partial class StringExtensions
     /// <param name="provider">An object that supplies culture-specific formatting information.</param>
     /// <returns>A copy of format in which the format items have been replaced by the string representation of the corresponding values in Dictionary.</returns>
     /// <exception cref="ArgumentNullException"></exception>
-    public static string Format(this string template, Dictionary<string, object> args, IFormatProvider? provider = null)
+    public static string Format(this string template, Dictionary<string, object?> args, IFormatProvider? provider = null)
     {
         ArgumentException.ThrowIfNullOrEmpty(template, nameof(template));
 
@@ -112,7 +112,7 @@ public static partial class StringExtensions
             });
         }
 
-        return string.Format(provider, template, dicIndex.Values.ToArray());
+        return string.Format(provider, template, [.. dicIndex.Values]);
     }
 
     /// <summary>
@@ -122,8 +122,10 @@ public static partial class StringExtensions
     /// </summary>
     /// <param name="value">The text with sign, accent or cedill to remove.</param>
     /// <returns></returns>
-    public static string RemoveDiacritics(this string value)
+    public static string? RemoveDiacritics(this string? value)
     {
+        if (string.IsNullOrEmpty(value)) return value;
+
         var normalizedString = value.Normalize(NormalizationForm.FormD);
         StringBuilder stringBuilder = new();
 
@@ -142,8 +144,10 @@ public static partial class StringExtensions
     /// </summary>
     /// <param name="value">Text content.</param>
     /// <returns></returns>
-    public static string RemoveSpecialCharacters(this string value)
+    public static string? RemoveSpecialCharacters(this string? value)
     {
+        if (string.IsNullOrEmpty(value)) return value;
+
         StringBuilder sb = new();
         foreach (char c in value)
         {

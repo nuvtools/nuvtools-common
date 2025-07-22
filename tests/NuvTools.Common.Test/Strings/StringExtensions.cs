@@ -1,7 +1,5 @@
 ﻿using NUnit.Framework;
 using NuvTools.Common.Strings;
-using System;
-using System.Collections.Generic;
 using System.Globalization;
 
 namespace NuvTools.Common.Tests.Strings
@@ -21,7 +19,7 @@ namespace NuvTools.Common.Tests.Strings
             string value = "{0} testing {something} useful to {framework} and {something} " +
                         "again on {holiday:dd/MM/yyyy} and {notindictionary}. Only for {value:N2}";
 
-            Dictionary<string, object> variables = new(){
+            Dictionary<string, object?> variables = new(){
                 { "0", "Bruno" },
                 { "something", "Format Function" },
                 { "framework", "Nuv Tools" },
@@ -33,11 +31,28 @@ namespace NuvTools.Common.Tests.Strings
         }
 
         [Test()]
+        public void FormatWithNullTest()
+        {
+            string value = "{0} testing {something} useful to {framework} and {something} " +
+                        "again on {holiday:dd/MM/yyyy} and {notindictionary}. Only for {value:N2}";
+
+            Dictionary<string, object?> variables = new(){
+                { "0", "Bruno" },
+                { "something", null },
+                { "framework", "Nuv Tools" },
+                { "holiday", new DateTime(2023, 11,02,10,11,12) },
+                { "value", null }
+            };
+
+            Assert.That(value.Format(variables, new CultureInfo("en-US")) == "Bruno testing  useful to Nuv Tools and  again on 02/11/2023 and . Only for ");
+        }
+
+        [Test()]
         public void FormatDictionaryEmptyTest()
         {
             string value = "Nothing to replace";
 
-            Dictionary<string, object> variables = new(){
+            Dictionary<string, object?> variables = new(){
                 { "0", "Bruno" },
                 { "something", "Format Function" },
                 { "framework", "Nuv Tools" },
@@ -47,8 +62,8 @@ namespace NuvTools.Common.Tests.Strings
 
             Assert.That(value.Format(variables) == value);
 
-            Assert.Throws<ArgumentException>(() => "".Format(new Dictionary<string, object>()));
-            Assert.Throws<ArgumentNullException>(() => value.Format(new Dictionary<string, object>()));
+            Assert.Throws<ArgumentException>(() => "".Format(new Dictionary<string, object?>()));
+            Assert.Throws<ArgumentNullException>(() => value.Format(new Dictionary<string, object?>()));
             Assert.Throws<ArgumentNullException>(() => value.Format(null, new CultureInfo("pt-BR")));
         }
 
@@ -57,7 +72,7 @@ namespace NuvTools.Common.Tests.Strings
         {
             string value = "Testing {value:N2} and index {1}";
 
-            Dictionary<string, object> variables = new(){
+            Dictionary<string, object?> variables = new(){
                 { "1", "Nuv Tools" },
                 { "value", 52.38532 } //will be rounded
             };
@@ -73,6 +88,9 @@ namespace NuvTools.Common.Tests.Strings
             Assert.That("Nuv Tools".Left(3) == "Nuv");
 
             Assert.That("Nuv Tools".Left(10) == "Nuv Tools");
+
+            string? value = null;
+            Assert.That(value.Left(10) == null);
         }
 
         [Test()]
@@ -81,6 +99,9 @@ namespace NuvTools.Common.Tests.Strings
             Assert.That("Nuv Tools".Right(5) == "Tools");
 
             Assert.That("Nuv Tools".Right(10) == "Nuv Tools");
+
+            string? value = null;
+            Assert.That(value.Right(10) == null);
         }
 
         [Test()]
