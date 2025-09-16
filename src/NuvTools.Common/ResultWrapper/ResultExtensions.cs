@@ -1,4 +1,5 @@
 ﻿
+using System.Net.Http.Json;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
@@ -11,17 +12,27 @@ public static class ResultExtensions
         ReferenceHandler = ReferenceHandler.Preserve
     };
 
-    public static async Task<IResult<T>?> ToResult<T>(this HttpResponseMessage response)
+    public static async Task<IResult<T>?> ToResult<T>(this HttpResponseMessage response, CancellationToken cancellationToken = default)
     {
-        var responseAsString = await response.Content.ReadAsStringAsync();
-        var responseObject = JsonSerializer.Deserialize<Result<T>>(responseAsString, serializerOptions);
-        return responseObject;
+        try
+        {
+            return await response.Content.ReadFromJsonAsync<Result<T>>(serializerOptions, cancellationToken);
+        }
+        catch
+        {
+            return null;
+        }
     }
 
-    public static async Task<IResult?> ToResult(this HttpResponseMessage response)
+    public static async Task<IResult?> ToResult(this HttpResponseMessage response, CancellationToken cancellationToken = default)
     {
-        var responseAsString = await response.Content.ReadAsStringAsync();
-        var responseObject = JsonSerializer.Deserialize<Result>(responseAsString, serializerOptions);
-        return responseObject;
+        try
+        {
+            return await response.Content.ReadFromJsonAsync<Result>(serializerOptions, cancellationToken);
+        }
+        catch
+        {
+            return null;
+        }
     }
 }
