@@ -6,80 +6,67 @@ Common library for Web, Desktop and Mobile (MAUI) applications.
 
 **NuvTools.Common** is a cross-platform utility library for .NET 8 and .NET 9, designed to streamline development for Web, Desktop, and Mobile (MAUI) applications. It provides a rich set of reusable components, extension methods, and helpers that address frequent programming needs, focusing on consistency, safety, and productivity.
 
-### Main Components
+## Main Features Overview
 
-#### 1. ResultWrapper
+NuvTools.Common provides a suite of utilities and helpers to simplify development across .NET 8 and .NET 9 projects, including Web, Desktop, and Mobile (MAUI) applications. Its main features are:
 
-A robust pattern for representing the outcome of operations, supporting success, error, and validation states. It standardizes how results and errors are handled and communicated across layers.
+### 1. ResultWrapper
+- **Purpose:** Standardizes operation result handling with support for success, error, and validation outcomes.
+- **Key Types:** `IResult`, `IResult<T>`, `Result`, `Result<T>`, `MessageDetail`, `ResultType`.
+- **Highlights:** Factory methods for creating results, structured messages, and easy integration with logging.
 
-- **Interfaces:**  
-  - `IResult` / `IResult<T>`: Define contracts for result objects, supporting both generic and non-generic scenarios.
-- **Implementations:**  
-  - `Result` / `Result<T>`: Concrete classes encapsulating success status, messages, and optional data.
-- **Message System:**  
-  - `MessageDetail`: Encapsulates message metadata (code, text, severity).
-  - `ResultType`: Enum for result classification (`Success`, `Error`, `ValidationError`).
-- **Factory Methods:**  
-  - `Success`, `Fail`, `ValidationFail`, `FailNotFound`: Static methods for creating standardized result objects.
+### 2. NumbersExtensions
+- **Purpose:** Safely parse strings to numeric types (`long`, `int`, `short`, `decimal`) with null or zero fallback.
+- **Highlights:** Reduces boilerplate and handles invalid input gracefully.
 
-**Benefits:**  
-- Uniform error and success handling.
-- Strongly-typed data payloads.
-- Easy integration with logging and monitoring.
+### 3. ContentTypes
+- **Purpose:** Centralized management of file content types using annotated enums.
+- **Key Types:** `ContentTypes.Enumeration` with extension methods for retrieving file extension, MIME type, and friendly name.
+- **Highlights:** Simplifies file handling and metadata retrieval.
 
-#### 2. NumbersExtensions
+### 4. Web Utilities
+- **Purpose:** Streamlines query string generation and parsing for web APIs.
+- **Key Methods:** `GetQueryString()`, `ParseQueryString()`.
+- **Highlights:** Supports complex objects, collections, and edge cases in query string manipulation.
 
-Extension methods for safe and flexible parsing of numeric values from strings, reducing boilerplate and runtime errors.
+### 5. Serialization Support
+- **Purpose:** Facilitates JSON serialization and deserialization, including support for enums and nested models.
+- **Highlights:** Handles complex object graphs and collections.
 
-- `ParseToLongOrNull(string, bool)`: Converts a string to `long?`, with optional zero fallback.
-- `ParseToIntOrNull(string, bool)`: Converts a string to `int?`.
-- `ParseToShortOrNull(string, bool)`: Converts a string to `short?`.
-- `ParseToDecimalOrNull(string, bool)`: Converts a string to `decimal?`.
+### 6. Enums and Attribute Helpers
+- **Purpose:** Simplifies working with enums and attributes, such as retrieving display names, descriptions, and custom metadata.
+- **Highlights:** Extension methods for extracting information from enums using attributes like `DisplayAttribute`.
 
-**Benefits:**  
-- Handles null, empty, and invalid input gracefully.
-- Reduces repetitive parsing code.
+### 7. Date and Time Utilities
+- **Purpose:** Provides helpers for parsing, formatting, and manipulating dates and times.
+- **Highlights:** Methods for converting between different date/time representations and handling nullable values.
 
-#### 3. ContentTypes
+### 8. Collection and LINQ Extensions
+- **Purpose:** Adds convenience methods for working with collections, lists, and LINQ queries.
+- **Highlights:** Safe access, filtering, mapping, and transformation utilities.
 
-Strongly-typed file content type management using annotated enumerations.
+### 9. IO and File Helpers
+- **Purpose:** Facilitates file operations, such as reading, writing, and managing file paths and content.
+- **Highlights:** Utilities for handling file streams, directories, and file type detection.
 
-- `ContentTypes.Enumeration`: Enum with `DisplayAttribute` for name, extension, and MIME type.
-- Extension methods:
-  - `GetExtension()`: Returns file extension.
-  - `GetContentType()`: Returns MIME type.
-  - `GetFriendlyNameExtension()`: Returns friendly name.
+### 10. String Extensions
+- **Purpose:** Enhances string manipulation with methods for formatting, parsing, validation, and conversion.
+- **Highlights:** Null-safe operations, trimming, case conversion, and more.
 
-**Benefits:**  
-- Centralized file type metadata.
-- Simplifies file upload/download logic.
+### 11. Reflection Utilities
+- **Purpose:** Provides helpers for runtime type inspection and dynamic member access.
+- **Highlights:** Methods for getting property values, types, and attributes dynamically.
 
-#### 4. Web Utilities
-
-Helpers for working with query strings, supporting object-to-query conversion and parsing.
-
-- `GetQueryString()`: Converts objects to query string format, handling collections and complex types.
-- `ParseQueryString()`: Parses query strings into key-value collections.
-
-**Benefits:**  
-- Simplifies web API integration.
-- Handles edge cases in query string generation and parsing.
-
-#### 5. Serialization Support
-
-Types and helpers for JSON serialization, including support for enums, nested models, and collections.
-
-**Benefits:**  
-- Facilitates model serialization/deserialization.
-- Supports complex object graphs.
+### 12. Validation Helpers
+- **Purpose:** Supports data validation scenarios, including model and property validation.
+- **Highlights:** Methods for checking required fields, data annotations, and custom validation logic.
 
 ---
 
-### Why Use NuvTools.Common?
+**Benefits:**  
+- Consistent patterns for error/success handling.
+- Strongly-typed APIs for safer code.
+- Reduces repetitive code and runtime errors.
+- Designed for modern .NET and C# features.
 
-- **Consistency:** Standardizes common patterns across your codebase.
-- **Safety:** Reduces runtime errors with robust parsing and result handling.
-- **Productivity:** Minimizes boilerplate, letting you focus on business logic.
-- **Modern:** Fully compatible with .NET 8/9 and C# 13 features.
-
-For more details, see the XML documentation in the source code or explore the relevant namespaces.
+For more details, refer to the XML documentation in the source code or explore the relevant namespaces.
