@@ -1,104 +1,193 @@
 ﻿using NUnit.Framework;
-using NUnit.Framework.Internal;
 using NuvTools.Common.ResultWrapper;
-using System.Collections.Generic;
+using NuvTools.Common.ResultWrapper.Enumerations;
 
 namespace NuvTools.Common.Tests.ResultWrapper;
 
-[TestFixture()]
+[TestFixture]
 public class ResultTests
 {
-    [Test()]
-    public void ValidationFail()
+    #region ValidationFail
+
+    [Test]
+    public void ValidationFail_ShouldCreateResultWithMessages()
     {
-        var list = new List<MessageDetail>() { new("aa"), new("bb") };
+        // Arrange
+        var list = new List<MessageDetail> { new("aa"), new("bb") };
 
-        Result.ValidationFail(list);
+        // Act
+        var result = Result.ValidationFail(list);
 
-        Result.ValidationFail(new MessageDetail("Validation error"));
-
-        Result.ValidationFail("Validation error");
-
-        var result = Result.ValidationFail(["Validation error"]);
-        Assert.That(result.Messages[0].Title, Is.EqualTo("Validation error"));
+        // Assert
+        Assert.Multiple(() =>
+        {
+            Assert.That(result.Succeeded, Is.False);
+            Assert.That(result.ResultType, Is.EqualTo(ResultType.ValidationError));
+            Assert.That(result.Messages, Has.Count.EqualTo(2));
+            Assert.That(result.Messages[0].Title, Is.EqualTo("aa"));
+        });
     }
 
-    [Test()]
-    public void ValidationFailTyped()
+    [Test]
+    public void ValidationFail_ShouldHandleDifferentOverloads()
     {
-        Result<int>.ValidationFail("Validation error");
-        Result<int>.ValidationFail(new MessageDetail("Validation error"));
+        // Act
+        var result1 = Result.ValidationFail(new MessageDetail("Validation error"));
+        var result2 = Result.ValidationFail("Validation error");
+        var result3 = Result.ValidationFail(["Validation error"]);
 
-        Result<int>.ValidationFail("Validation error", 1);
-        Result<int>.ValidationFail(new MessageDetail("Validation error"), 1);
-
-        var resultTyped = Result<int>.ValidationFail(["Validation error"]);
-        Assert.That(resultTyped.Messages[0].Title, Is.EqualTo("Validation error"));
-
-        resultTyped = Result<int>.ValidationFail(["Validation error"], 0);
-        Assert.That(resultTyped.Messages[0].Title, Is.EqualTo("Validation error"));
+        // Assert
+        Assert.Multiple(() =>
+        {
+            Assert.That(result1.Messages[0].Title, Is.EqualTo("Validation error"));
+            Assert.That(result2.Messages[0].Title, Is.EqualTo("Validation error"));
+            Assert.That(result3.Messages[0].Title, Is.EqualTo("Validation error"));
+        });
     }
 
-    [Test()]
-    public void Fail()
+    [Test]
+    public void ValidationFailTyped_ShouldSupportDataAndMessages()
     {
-        Result.Fail();
+        // Act
+        var result1 = Result<int>.ValidationFail("Validation error");
+        var result2 = Result<int>.ValidationFail("Validation error", 10);
 
-        var result = Result.Fail("Not work");
+        // Assert
+        Assert.Multiple(() =>
+        {
+            Assert.That(result1.Messages[0].Title, Is.EqualTo("Validation error"));
+            Assert.That(result1.Data, Is.EqualTo(0));
 
-        Assert.That(result.Messages[0].Title, Is.EqualTo("Not work"));
-
-        Result.Fail(new MessageDetail("Not work"));
-
-        Result.Fail(["not work"]);
-
-        Result.Fail([new MessageDetail("Not work")]);
-
-        Assert.That(result.Messages[0].Title, Is.EqualTo("Not work"));
-
-
-        var notfound = Result.FailNotFound("Not found");
-        Assert.That(notfound.Messages[0].Code, Is.EqualTo("404"));
-        Assert.That(notfound.ContainsNotFound);
+            Assert.That(result2.Messages[0].Title, Is.EqualTo("Validation error"));
+            Assert.That(result2.Data, Is.EqualTo(10));
+            Assert.That(result2.ResultType, Is.EqualTo(ResultType.ValidationError));
+        });
     }
 
-    [Test()]
-    public void FailTyped()
-    {
-        var resultTyped = Result<int>.Fail("Not work");
-        Assert.That(resultTyped.Messages[0].Title, Is.EqualTo("Not work"));
+    #endregion
 
-        var notfound = Result<int>.FailNotFound("Not found");
-        Assert.That(notfound.Messages[0].Code, Is.EqualTo("404"));
-        Assert.That(notfound.ContainsNotFound);
+    #region Fail
+
+    [Test]
+    public void Fail_ShouldCreateErrorResult()
+    {
+        // Act
+        var result = Result.Fail("Operation failed");
+
+        // Assert
+        Assert.Multiple(() =>
+        {
+            Assert.That(result.Succeeded, Is.False);
+            Assert.That(result.ResultType, Is.EqualTo(ResultType.Error));
+            Assert.That(result.Messages[0].Title, Is.EqualTo("Operation failed"));
+            Assert.That(result.Message, Does.Contain("Operation failed"));
+            Assert.That(result.MessageDetail?.Title, Is.EqualTo("Operation failed"));
+        });
     }
 
-    [Test()]
-    public void Success()
+    [Test]
+    public void FailNotFound_ShouldSet404CodeAndContainsNotFound()
     {
-        Result.Success();
+        // Act
+        var result = Result.FailNotFound("Not found");
 
+        // Assert
+        Assert.Multiple(() =>
+        {
+            Assert.That(result.Messages[0].Code, Is.EqualTo("404"));
+            Assert.That(result.ContainsNotFound, Is.True);
+            Assert.That(result.ResultType, Is.EqualTo(ResultType.Error));
+        });
+    }
+
+    [Test]
+    public void FailTyped_ShouldSupportGenericType()
+    {
+        // Act
+        var result = Result<int>.Fail("Generic failure", 99);
+        var notfound = Result<int>.FailNotFound("Missing data");
+
+        // Assert
+        Assert.Multiple(() =>
+        {
+            Assert.That(result.Succeeded, Is.False);
+            Assert.That(result.Data, Is.EqualTo(99));
+            Assert.That(result.Messages[0].Title, Is.EqualTo("Generic failure"));
+
+            Assert.That(notfound.Messages[0].Code, Is.EqualTo("404"));
+            Assert.That(notfound.ContainsNotFound, Is.True);
+        });
+    }
+
+    #endregion
+
+    #region Success
+
+    [Test]
+    public void Success_ShouldCreateSucceededResult()
+    {
+        // Act
         var result = Result.Success("It works!");
-        Assert.That(result.Messages[0].Title, Is.EqualTo("It works!"));
 
-        Result.Success(new MessageDetail("It works!"));
+        // Assert
+        Assert.Multiple(() =>
+        {
+            Assert.That(result.Succeeded, Is.True);
+            Assert.That(result.ResultType, Is.EqualTo(ResultType.Success));
+            Assert.That(result.Messages[0].Title, Is.EqualTo("It works!"));
+            Assert.That(result.Message, Does.Contain("It works!"));
+        });
     }
 
-    private static IResult<int> TestSuccessTypedReturn()
+    [Test]
+    public void SuccessTyped_ShouldIncludeDataAndMessage()
     {
-        return Result<int>.Success();
+        // Act
+        var result = Result<int>.Success(1, "Operation completed");
+
+        // Assert
+        Assert.Multiple(() =>
+        {
+            Assert.That(result.Succeeded, Is.True);
+            Assert.That(result.Data, Is.EqualTo(1));
+            Assert.That(result.Messages[0].Title, Is.EqualTo("Operation completed"));
+            Assert.That(result.Message, Does.Contain("Operation completed"));
+        });
     }
 
-    [Test()]
-    public void SuccessTyped()
+    [Test]
+    public void SuccessTyped_ShouldWorkWithoutMessage()
     {
-        TestSuccessTypedReturn();
+        // Act
+        var result = Result<int>.Success(42);
 
-        Result<int>.Success(1);
-        Result<int>.Success(1, "It works!");
-
-        var resultTyped = Result<int>.Success(1, new MessageDetail("It works!"));
-        Assert.That(resultTyped.Messages[0].Title, Is.EqualTo("It works!"));
-        Assert.That(resultTyped.Data, Is.EqualTo(1));
+        // Assert
+        Assert.Multiple(() =>
+        {
+            Assert.That(result.Succeeded, Is.True);
+            Assert.That(result.Data, Is.EqualTo(42));
+            Assert.That(result.Messages, Is.Empty);
+        });
     }
+
+    #endregion
+
+    #region DerivedProperties
+
+    [Test]
+    public void MessageAndMessageDetail_ShouldReturnNull_WhenNoMessages()
+    {
+        // Act
+        var result = Result.Success();
+
+        // Assert
+        Assert.Multiple(() =>
+        {
+            Assert.That(result.Messages, Is.Empty);
+            Assert.That(result.MessageDetail, Is.Null);
+            Assert.That(result.Message, Is.Null);
+        });
+    }
+
+    #endregion
 }

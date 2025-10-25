@@ -1,107 +1,117 @@
-﻿using NuvTools.Common.Enums;
-using System.ComponentModel;
+﻿using NuvTools.Common.Dates.Enumerations;
 using System.Globalization;
+using System.Runtime.InteropServices;
 
 namespace NuvTools.Common.Dates;
 
-public enum TimeZoneRegion
-{
-    /// <summary>
-    /// Time zone GMT-03:00.
-    /// <list type="bullet">
-    /// <item>Brasilia (E. South America Standard Time)</item>
-    /// <item>Buenos Aires (Argentina Standard Time)</item>
-    /// <item>Georgetown (SA Eastern Standard Time)</item>
-    /// <item>Greenland (Greenland Standard Time)</item>
-    /// <item>Montevideo (Montevideo Standard Time)</item>
-    /// </list>
-    /// </summary>
-    [Description("E. South America Standard Time")]
-    Brasilia,
-
-    /// <summary>
-    /// Time zone GMT-04:00.
-    /// <list type="bullet">
-    /// <item>Atlantic Time - Canada (Atlantic Standard Time)</item>
-    /// <item>La Paz (SA Western Standard Time)</item>
-    /// <item>Manaus (Central Brazilian Standard Time)</item>
-    /// <item>Greenland (Greenland Standard Time)</item>
-    /// <item>Santiago (Pacific SA Standard Time)</item>
-    /// </list>
-    /// </summary>
-    [Description("Pacific SA Standard Time")]
-    Santiago,
-
-    /// <summary>
-    /// Time zone GMT-05:00.
-    /// <list type="bullet">
-    /// <item>Bogota, Lima, Quito, Rio Branco (SA Pacific Standard Time)</item>
-    /// <item>Eastern Time (US and Canada) (Eastern Standard Time)</item>
-    /// <item>Indiana (East) (Central Standard Time (Mexico))</item>
-    /// </list>
-    /// </summary>
-    [Description("Eastern Standard Time")]
-    EasternTimeUSCanada,
-
-    /// <summary>
-    /// Time zone GMT-06:00.
-    /// <list type="bullet">
-    /// <item>Central America (Central America Standard Time)</item>
-    /// <item>Central Time (US and Canada) (Central Standard Time)</item>
-    /// <item>Guadalajara, Mexico City, Monterrey (Central Standard Time (Mexico))</item>
-    /// <item>Saskatchewan (Canada Central Standard Time)</item>
-    /// </list>
-    /// </summary>
-    [Description("Central Standard Time")]
-    CentralStandardTime
-}
-
-public enum UtcDirection
-{
-    None,
-    FromUtc,
-    ToUtc
-}
-
+/// <summary>
+/// Provides helper methods for timezone conversions.
+/// </summary>
 public static class TimeZoneExtensions
 {
-
     /// <summary>
-    /// Converts a date and time to the specified time zone.
+    /// Converts a <see cref="DateTime"/> to the specified timezone or offset.
     /// </summary>
-    /// <param name="value">Date and time to be converted.</param>
-    /// <param name="timeZoneRegion">Region which value will be converted.</param>
-    /// <param name="utcDirection">Conversion direction.</param>
-    /// <returns></returns>
-    public static DateTime ToTimeZone(this DateTime value,
-                                                TimeZoneRegion timeZoneRegion = TimeZoneRegion.Brasilia,
-                                                UtcDirection utcDirection = UtcDirection.None)
+    /// <param name="value">The input datetime.</param>
+    /// <param name="timeZoneRegion">The target region (optional if using offset).</param>
+    /// <param name="offsetMinutes">Manual offset in minutes (optional).</param>
+    /// <param name="utcDirection">Whether to convert to or from UTC.</param>
+    public static DateTime ToTimeZone(
+        this DateTime value,
+        TimeZoneRegion timeZoneRegion = TimeZoneRegion.Brasilia,
+        UtcDirection utcDirection = UtcDirection.None, int? offsetMinutes = null)
     {
-        TimeZoneInfo timeZoneInfo = TimeZoneInfo.FindSystemTimeZoneById(timeZoneRegion.GetDescription());
+        // Determine timezone info: region → offset → UTC fallback
+        TimeZoneInfo timeZoneInfo = offsetMinutes.HasValue
+            ? CreateTimeZoneFromOffset(offsetMinutes.Value)
+            : timeZoneRegion.GetTimeZoneInfo();
 
-        switch (utcDirection)
+        return utcDirection switch
         {
-            case UtcDirection.FromUtc:
-                if (value.Kind == DateTimeKind.Local)
-                    return value.ToTimeZone(timeZoneRegion);
+            UtcDirection.FromUtc => value.Kind == DateTimeKind.Local
+                ? value.ToTimeZone(timeZoneRegion, offsetMinutes: offsetMinutes)
+                : TimeZoneInfo.ConvertTimeFromUtc(value, timeZoneInfo),
 
-                return TimeZoneInfo.ConvertTimeFromUtc(value, timeZoneInfo);
-            case UtcDirection.ToUtc:
-                return TimeZoneInfo.ConvertTimeToUtc(value, timeZoneInfo);
-            default:
-                return TimeZoneInfo.ConvertTime(value, timeZoneInfo);
-        }
+            UtcDirection.ToUtc => TimeZoneInfo.ConvertTimeToUtc(value, timeZoneInfo),
+
+            _ => TimeZoneInfo.ConvertTime(value, timeZoneInfo)
+        };
     }
 
     /// <summary>
-    /// Parses the string to DateTime using TimeZoneRegion options
+    /// Converts a string date to UTC <see cref="DateTime"/> using either a region or a custom offset.
     /// </summary>
-    /// <param name="value">Date and time string to be converted into DateTIme.</param>
-    /// <param name="format">Format that the value is being passed.</param>
-    /// <param name="fromTimeZoneRegion">Region which value will be converted.</param>
-    /// <returns></returns>
-    public static DateTime DateParseToUtc(this string value, string format = "dd-MM-yyyy HH:mm:ss", TimeZoneRegion fromTimeZoneRegion = TimeZoneRegion.Brasilia)
+    public static DateTime DateParseToUtc(
+        this string value,
+        string format = "dd-MM-yyyy HH:mm:ss",
+        TimeZoneRegion fromTimeZoneRegion = TimeZoneRegion.Brasilia,
+        int? offsetMinutes = null)
     {
-        return DateTime.ParseExact(value, format, CultureInfo.InvariantCulture).ToTimeZone(fromTimeZoneRegion, UtcDirection.ToUtc);
+        var parsed = DateTime.ParseExact(value, format, CultureInfo.InvariantCulture);
+        return parsed.ToTimeZone(fromTimeZoneRegion, UtcDirection.ToUtc, offsetMinutes);
+    }
+
+    /// <summary>
+    /// Converts a DateTimeOffset to the specified timezone region or offset.
+    /// </summary>
+    public static DateTimeOffset ToTimeZoneOffset(
+        this DateTimeOffset value,
+        TimeZoneRegion timeZoneRegion = TimeZoneRegion.Brasilia,
+        int? offsetMinutes = null)
+    {
+        var targetZone = offsetMinutes.HasValue
+            ? CreateTimeZoneFromOffset(offsetMinutes.Value)
+            : timeZoneRegion.GetTimeZoneInfo();
+
+        return TimeZoneInfo.ConvertTime(value, targetZone);
+    }
+
+    private static readonly Dictionary<TimeZoneRegion, (string WindowsId, string IanaId)> _timeZoneMap = new()
+    {
+        { TimeZoneRegion.Utc, ("UTC", "Etc/UTC") },
+        { TimeZoneRegion.PacificTimeUSCanada, ("Pacific Standard Time", "America/Los_Angeles") },
+        { TimeZoneRegion.MountainTimeUSCanada, ("Mountain Standard Time", "America/Denver") },
+        { TimeZoneRegion.CentralStandardTime, ("Central Standard Time", "America/Chicago") },
+        { TimeZoneRegion.EasternTimeUSCanada, ("Eastern Standard Time", "America/New_York") },
+        { TimeZoneRegion.Santiago, ("Pacific SA Standard Time", "America/Santiago") },
+        { TimeZoneRegion.Brasilia, ("E. South America Standard Time", "America/Sao_Paulo") },
+        { TimeZoneRegion.MidAtlantic, ("Mid-Atlantic Standard Time", "Atlantic/South_Georgia") },
+        { TimeZoneRegion.Azores, ("Azores Standard Time", "Atlantic/Azores") },
+        { TimeZoneRegion.London, ("GMT Standard Time", "Europe/London") },
+        { TimeZoneRegion.CentralEurope, ("W. Europe Standard Time", "Europe/Berlin") },
+        { TimeZoneRegion.EasternEurope, ("GTB Standard Time", "Europe/Athens") },
+        { TimeZoneRegion.Moscow, ("Russian Standard Time", "Europe/Moscow") },
+        { TimeZoneRegion.Dubai, ("Arabian Standard Time", "Asia/Dubai") },
+        { TimeZoneRegion.India, ("India Standard Time", "Asia/Kolkata") },
+        { TimeZoneRegion.SoutheastAsia, ("SE Asia Standard Time", "Asia/Bangkok") },
+        { TimeZoneRegion.China, ("China Standard Time", "Asia/Shanghai") },
+        { TimeZoneRegion.Japan, ("Tokyo Standard Time", "Asia/Tokyo") },
+        { TimeZoneRegion.Sydney, ("AUS Eastern Standard Time", "Australia/Sydney") },
+        { TimeZoneRegion.NewZealand, ("New Zealand Standard Time", "Pacific/Auckland") }
+    };
+
+    /// <summary>
+    /// Returns the <see cref="TimeZoneInfo"/> for a given region, respecting the OS platform.
+    /// </summary>
+    public static TimeZoneInfo GetTimeZoneInfo(this TimeZoneRegion region)
+    {
+        if (!_timeZoneMap.TryGetValue(region, out var ids))
+            throw new ArgumentOutOfRangeException(nameof(region), region, "Unsupported timezone region.");
+
+        var timeZoneId = RuntimeInformation.IsOSPlatform(OSPlatform.Windows)
+            ? ids.WindowsId
+            : ids.IanaId;
+
+        return TimeZoneInfo.FindSystemTimeZoneById(timeZoneId);
+    }
+
+    /// <summary>
+    /// Creates a dynamic timezone using a UTC offset in minutes.
+    /// </summary>
+    private static TimeZoneInfo CreateTimeZoneFromOffset(int offsetMinutes)
+    {
+        var offset = TimeSpan.FromMinutes(offsetMinutes);
+        var displayName = $"UTC{(offset >= TimeSpan.Zero ? "+" : "")}{offset:hh\\:mm}";
+        return TimeZoneInfo.CreateCustomTimeZone(displayName, offset, displayName, displayName);
     }
 }
