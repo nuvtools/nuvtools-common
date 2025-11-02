@@ -1,11 +1,12 @@
-﻿using System.Text.Json;
+﻿using NuvTools.Common.ResultWrapper.Enumerations;
+using System.Text.Json;
 using System.Text.Json.Serialization;
 
 namespace NuvTools.Common.ResultWrapper;
 
 /// <summary>
 /// Extension methods to convert <see cref="HttpResponseMessage"/> into <see cref="IResult"/> or <see cref="IResult{T}"/>.
-/// Handles both success and error responses (e.g., 404, 500) that may contain a serialized <see cref="Result"/>.
+/// Handles both success and error responses that may contain a serialized <see cref="Result"/>.
 /// </summary>
 public static class ResultExtensions
 {
@@ -16,10 +17,6 @@ public static class ResultExtensions
         DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull
     };
 
-    /// <summary>
-    /// Converts an <see cref="HttpResponseMessage"/> into a strongly typed <see cref="IResult{T}"/>.
-    /// Always returns a valid <see cref="IResult{T}"/> (never null), even for non-successful responses or invalid bodies.
-    /// </summary>
     public static async Task<IResult<T>> ToResultAsync<T>(
         this HttpResponseMessage response,
         CancellationToken cancellationToken = default)
@@ -51,16 +48,11 @@ public static class ResultExtensions
         }
         catch
         {
-            // Ignore and fallback to generic failure
         }
 
         return CreateFallbackResult<T>(response, content);
     }
 
-    /// <summary>
-    /// Converts an <see cref="HttpResponseMessage"/> into a non-generic <see cref="IResult"/>.
-    /// Always returns a valid <see cref="IResult"/> (never null), even for non-successful responses or invalid bodies.
-    /// </summary>
     public static async Task<IResult> ToResultAsync(
         this HttpResponseMessage response,
         CancellationToken cancellationToken = default)
@@ -92,11 +84,86 @@ public static class ResultExtensions
         }
         catch
         {
-            // Ignore and fallback to generic failure
         }
 
         return CreateFallbackResult(response, content);
     }
+
+    /// <summary>
+    /// Converts an <see cref="HttpResponseMessage"/> into a strongly typed <see cref="IResult{T,E}"/>.
+    /// Supports APIs that return non-standard payloads in case of error.
+    /// </summary>
+    public static async Task<IResult<T, E>> ToResultAsync<T, E>(
+        this HttpResponseMessage response,
+        CancellationToken cancellationToken = default)
+    {
+        var statusCode = (int)response.StatusCode;
+        var reason = response.ReasonPhrase ?? response.StatusCode.ToString();
+
+        string? content;
+        try
+        {
+            content = await response.Content.ReadAsStringAsync(cancellationToken);
+        }
+        catch (Exception ex)
+        {
+            return Result<T, E>.Fail($"Failed to read response body: {ex.Message}");
+        }
+
+        if (string.IsNullOrWhiteSpace(content))
+        {
+            return Result<T, E>.Fail(
+                new MessageDetail($"Empty response body ({statusCode} {reason})", Code: statusCode.ToString()));
+        }
+
+        // Try to deserialize as Result<T>
+        try
+        {
+            var resultT = JsonSerializer.Deserialize<Result<T>>(content, SerializerOptions);
+            if (resultT is not null)
+            {
+                var isReal =
+                    resultT.ResultType != ResultType.Success ||
+                    resultT.Succeeded ||
+                    resultT.Data is not null ||
+                    (resultT.Messages?.Count ?? 0) > 0;
+
+                if (isReal)
+                {
+                    return resultT.Succeeded
+                        ? Result<T, E>.Success(resultT.Data, resultT.MessageDetail)
+                        : Result<T, E>.Fail(resultT.Messages, resultT.Data);
+                }
+            }
+        }
+        catch
+        {
+        }
+
+        // Try to deserialize as error payload E
+        try
+        {
+            var errorPayload = JsonSerializer.Deserialize<E>(content, SerializerOptions);
+            if (errorPayload is not null)
+            {
+                return Result<T, E>.Fail(
+                    new MessageDetail($"Error response ({statusCode} {reason})", Code: statusCode.ToString()),
+                    error: errorPayload);
+            }
+        }
+        catch
+        {
+            // ignore and fallback
+        }
+
+        // Fallback if both deserializations failed
+        return Result<T, E>.Fail(
+            new MessageDetail(
+                $"Unexpected response ({statusCode} {reason})",
+                Detail: TrimBody(content),
+                Code: statusCode.ToString()));
+    }
+
 
     #region Private Helpers
 

@@ -169,4 +169,132 @@ public class ResultExtensionsTests
     }
 
     #endregion
+
+    #region Result with Error
+
+    public class SuccessDto
+    {
+        public string? Name { get; set; }
+    }
+
+    public class ErrorPayload
+    {
+        public string? Error { get; set; }
+        public string? Code { get; set; }
+    }
+
+    [Test]
+    public async Task ToResultAsync_T_E_Returns_Success_When_ResultT_Is_Valid()
+    {
+        var responseContent = JsonSerializer.Serialize(new Result<SuccessDto>
+        {
+            Data = new SuccessDto { Name = "John" },
+            Succeeded = true,
+            ResultType = NuvTools.Common.ResultWrapper.Enumerations.ResultType.Success
+        });
+
+        var response = new HttpResponseMessage(HttpStatusCode.OK)
+        {
+            Content = new StringContent(responseContent, Encoding.UTF8, "application/json")
+        };
+
+        var result = await response.ToResultAsync<SuccessDto, ErrorPayload>();
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(result.Succeeded, Is.True);
+            Assert.That(result.Data, Is.Not.Null);
+            Assert.That(result.Data!.Name, Is.EqualTo("John"));
+            Assert.That(result.ErrorPayload, Is.Null);
+        });
+    }
+
+    [Test]
+    public async Task ToResultAsync_T_E_Returns_Typed_Error_When_Not_ResultT_But_Valid_E()
+    {
+        var jsonError = JsonSerializer.Serialize(new ErrorPayload
+        {
+            Error = "Invalid request",
+            Code = "400"
+        });
+
+        var response = new HttpResponseMessage(HttpStatusCode.BadRequest)
+        {
+            Content = new StringContent(jsonError, Encoding.UTF8, "application/json")
+        };
+
+        var result = await response.ToResultAsync<SuccessDto, ErrorPayload>();
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(result.Succeeded, Is.False);
+            Assert.That(result.ErrorPayload, Is.Not.Null);
+            Assert.That(result.ErrorPayload!.Error, Is.EqualTo("Invalid request"));
+            Assert.That(result.ErrorPayload!.Code, Is.EqualTo("400"));
+        });
+    }
+
+    [Test]
+    public async Task ToResultAsync_T_E_Returns_Failure_On_Empty_Body()
+    {
+        var response = new HttpResponseMessage(HttpStatusCode.InternalServerError)
+        {
+            Content = new StringContent("", Encoding.UTF8, "application/json")
+        };
+
+        var result = await response.ToResultAsync<SuccessDto, ErrorPayload>();
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(result.Succeeded, Is.False);
+            Assert.That(result.Messages, Is.Not.Empty);
+            Assert.That(result.ErrorPayload, Is.Null);
+            Assert.That(result.Messages[0].Code, Is.EqualTo("500"));
+        });
+    }
+
+    [Test]
+    public async Task ToResultAsync_T_E_Returns_Fallback_On_Invalid_Json()
+    {
+        var invalidJson = "{ not-valid-json }";
+
+        var response = new HttpResponseMessage(HttpStatusCode.BadRequest)
+        {
+            Content = new StringContent(invalidJson, Encoding.UTF8, "application/json")
+        };
+
+        var result = await response.ToResultAsync<SuccessDto, ErrorPayload>();
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(result.Succeeded, Is.False);
+            Assert.That(result.Messages, Is.Not.Empty);
+            Assert.That(result.ErrorPayload, Is.Null);
+            Assert.That(result.Messages[0].Code, Is.EqualTo("400"));
+        });
+    }
+
+    [Test]
+    public async Task ToResultAsync_T_E_Falls_Back_When_Not_Matching_ResultT_Or_E()
+    {
+        var body = "\"just_a_string\"";
+
+        var response = new HttpResponseMessage(HttpStatusCode.BadRequest)
+        {
+            Content = new StringContent(body, Encoding.UTF8, "application/json")
+        };
+
+        var result = await response.ToResultAsync<SuccessDto, ErrorPayload>();
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(result.Succeeded, Is.False);
+            Assert.That(result.Messages, Is.Not.Empty);
+            Assert.That(result.ErrorPayload, Is.Null);
+            Assert.That(result.Messages[0].Code, Is.EqualTo("400"));
+        });
+    }
+
+    #endregion
+
 }
