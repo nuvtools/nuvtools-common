@@ -98,7 +98,7 @@ public class ResultExtensionsTests
 
         Assert.That(result.Succeeded, Is.False);
         Assert.That(result.MessageDetail!.Code, Is.EqualTo("404"));
-        Assert.That(result.Message, Does.Contain("Empty response body"));
+        Assert.That(result.Message!.ToLower(), Does.Contain("404 not found"));
     }
 
     [Test]
@@ -179,8 +179,8 @@ public class ResultExtensionsTests
 
     public class ErrorPayload
     {
-        public string? Error { get; set; }
-        public string? Code { get; set; }
+        public required string Error { get; set; }
+        public required string Code { get; set; }
     }
 
     [Test]

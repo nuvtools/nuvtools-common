@@ -8,7 +8,7 @@ namespace NuvTools.Common.ResultWrapper;
 /// Extension methods to convert <see cref="HttpResponseMessage"/> into <see cref="IResult"/> or <see cref="IResult{T}"/>.
 /// Handles both success and error responses that may contain a serialized <see cref="Result"/>.
 /// </summary>
-public static class ResultExtensions
+public static class HttpResponseMessageExtensions
 {
     private static readonly JsonSerializerOptions SerializerOptions = new()
     {
@@ -16,6 +16,20 @@ public static class ResultExtensions
         ReferenceHandler = ReferenceHandler.Preserve,
         DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull
     };
+
+    public static async Task<IResult> ToResultAsync(this HttpResponseMessage response, CancellationToken cancellationToken = default)
+    {
+        var (statusCode, reason, content) = await ReadContentAsync(response, cancellationToken);
+        if (content is null)
+            return response.IsSuccessStatusCode ? Result.Success() : CreateFallbackResult(statusCode, reason, null);
+
+        if (TryDeserialize(content, out Result? result) && IsValidResult(result))
+            return result!;
+
+        return response.IsSuccessStatusCode
+            ? Result.Success()
+            : CreateFallbackResult(statusCode, reason, content);
+    }
 
     public static async Task<IResult<T>> ToResultAsync<T>(this HttpResponseMessage response, CancellationToken cancellationToken = default)
     {
@@ -38,19 +52,7 @@ public static class ResultExtensions
         return CreateFallbackResult<T>(statusCode, reason, content);
     }
 
-    public static async Task<IResult> ToResultAsync(this HttpResponseMessage response, CancellationToken cancellationToken = default)
-    {
-        var (statusCode, reason, content) = await ReadContentAsync(response, cancellationToken);
-        if (content is null)
-            return response.IsSuccessStatusCode ? Result.Success() : CreateFallbackResult(statusCode, reason, null);
 
-        if (TryDeserialize(content, out Result? result) && IsValidResult(result))
-            return result!;
-
-        return response.IsSuccessStatusCode
-            ? Result.Success()
-            : CreateFallbackResult(statusCode, reason, content);
-    }
 
     public static async Task<IResult<T, E>> ToResultAsync<T, E>(this HttpResponseMessage response, CancellationToken cancellationToken = default)
     {
@@ -69,14 +71,11 @@ public static class ResultExtensions
                 : Result<T, E>.Fail(result.Messages, result.Data);
         }
 
-        if (TryDeserialize(content, out T? data))
+        if (response.IsSuccessStatusCode && TryDeserialize(content, out T? data))
         {
-            return response.IsSuccessStatusCode
-                ? Result<T, E>.Success(data!)
-                : Result<T, E>.Fail(CreateMessage(statusCode, reason, content), data!);
+            Result<T, E>.Success(data);
         }
-
-        if (TryDeserialize(content, out E? error))
+        else if (TryDeserialize(content, out E? error))
         {
             return Result<T, E>.Fail(CreateMessage(statusCode, reason), error: error!);
         }
