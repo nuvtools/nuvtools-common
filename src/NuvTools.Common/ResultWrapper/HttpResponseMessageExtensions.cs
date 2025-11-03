@@ -73,7 +73,7 @@ public static class HttpResponseMessageExtensions
 
         if (response.IsSuccessStatusCode && TryDeserialize(content, out T? data))
         {
-            Result<T, E>.Success(data);
+            return Result<T, E>.Success(data);
         }
         else if (TryDeserialize(content, out E? error))
         {
