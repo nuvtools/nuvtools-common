@@ -3,6 +3,9 @@ using System.Text.Json;
 
 namespace NuvTools.Common.Serialization.Json;
 
+/// <summary>
+/// Provides extension methods for object serialization, deserialization, and cloning using JSON.
+/// </summary>
 public static class ObjectExtensions
 {
     /// <summary>

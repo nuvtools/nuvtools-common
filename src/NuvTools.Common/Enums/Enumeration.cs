@@ -5,11 +5,15 @@ using System.Reflection;
 namespace NuvTools.Common.Enums;
 
 /// <summary>
-/// Helpers to interact with the Enumerations. 
+/// Helpers to interact with the Enumerations.
 /// </summary>
 public static class Enumeration
 {
-
+    /// <summary>
+    /// Converts an <see cref="IEnumDescriptor{TKey}"/> with integer key to <see cref="IEnumDescriptor"/>.
+    /// </summary>
+    /// <param name="descriptor">The descriptor to convert.</param>
+    /// <returns>An <see cref="IEnumDescriptor"/> instance.</returns>
     public static IEnumDescriptor ToEnumDescriptor(this IEnumDescriptor<int> descriptor)
     {
         return new EnumDescriptor(descriptor.Id)
@@ -215,6 +219,11 @@ public static class Enumeration
         return list;
     }
 
+    /// <summary>
+    /// Gets a list of all enum values for the specified enum type.
+    /// </summary>
+    /// <typeparam name="TEnum">The enum type.</typeparam>
+    /// <returns>A list containing all values of the enum.</returns>
     public static List<TEnum> GetListValues<TEnum>() where TEnum : Enum
     {
         var enumType = typeof(TEnum);

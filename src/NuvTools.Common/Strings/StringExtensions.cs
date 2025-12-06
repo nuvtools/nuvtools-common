@@ -213,6 +213,11 @@ public static partial class StringExtensions
         }
     }
 
+    /// <summary>
+    /// Extracts only the numeric digits from a string, removing all non-digit characters.
+    /// </summary>
+    /// <param name="value">The string to process.</param>
+    /// <returns>A string containing only the numeric digits from the input.</returns>
     public static string GetNumbersOnly(this string value)
     {
         return NonDigitRegex().Replace(value, string.Empty);

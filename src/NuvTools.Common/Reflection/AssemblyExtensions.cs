@@ -3,9 +3,18 @@ using System.Reflection;
 
 namespace NuvTools.Common.Reflection;
 
+/// <summary>
+/// Provides extension methods for <see cref="Assembly"/> objects.
+/// </summary>
 public static class AssemblyExtensions
 {
-
+    /// <summary>
+    /// Lists all referenced assemblies (components) from the specified assembly.
+    /// </summary>
+    /// <param name="assembly">The assembly to inspect.</param>
+    /// <param name="fullName">If true, returns full assembly names; otherwise returns name and version.</param>
+    /// <returns>A list of component names, or null if the assembly is null.</returns>
+    /// <exception cref="ArgumentNullException">Thrown when <paramref name="assembly"/> is null.</exception>
     public static List<string>? ListComponent(this Assembly assembly, bool fullName = false)
     {
         ArgumentNullException.ThrowIfNull(assembly);
@@ -29,12 +38,23 @@ public static class AssemblyExtensions
         return list.Distinct().ToList();
     }
 
+    /// <summary>
+    /// Gets the name of the assembly.
+    /// </summary>
+    /// <param name="assembly">The assembly to get the name from.</param>
+    /// <returns>The name of the assembly, or null if not available.</returns>
+    /// <exception cref="ArgumentNullException">Thrown when <paramref name="assembly"/> is null.</exception>
     public static string? Name(this Assembly assembly)
     {
         ArgumentNullException.ThrowIfNull(assembly);
         return assembly.GetName().Name;
     }
 
+    /// <summary>
+    /// Gets the description of the assembly from its <see cref="AssemblyDescriptionAttribute"/>.
+    /// </summary>
+    /// <param name="assembly">The assembly to get the description from.</param>
+    /// <returns>The description of the assembly, or null if not available.</returns>
     public static string? Description(this Assembly assembly)
     {
         if (assembly is null) return null;
@@ -43,6 +63,13 @@ public static class AssemblyExtensions
              assembly.GetCustomAttributes(typeof(AssemblyDescriptionAttribute), false)[0]).Description;
     }
 
+    /// <summary>
+    /// Gets the version of the assembly in the format "major.minor.build.revision".
+    /// </summary>
+    /// <param name="assembly">The assembly to get the version from.</param>
+    /// <returns>The formatted version string, or null if not available.</returns>
+    /// <exception cref="ArgumentNullException">Thrown when <paramref name="assembly"/> is null.</exception>
+    /// <exception cref="VersionException">Thrown when there is an error retrieving the version information.</exception>
     public static string? Version(this Assembly assembly)
     {
         ArgumentNullException.ThrowIfNull(assembly);
@@ -71,6 +98,12 @@ public static class AssemblyExtensions
 
     }
 
+    /// <summary>
+    /// Extracts comprehensive program information from the assembly.
+    /// </summary>
+    /// <param name="assembly">The assembly to extract information from.</param>
+    /// <returns>An <see cref="IProgramInfo"/> object containing name, description, version, and component information.</returns>
+    /// <exception cref="ArgumentNullException">Thrown when <paramref name="assembly"/> is null or assembly name is null.</exception>
     public static IProgramInfo ProgramInfo(this Assembly assembly)
     {
         ArgumentNullException.ThrowIfNull(assembly);

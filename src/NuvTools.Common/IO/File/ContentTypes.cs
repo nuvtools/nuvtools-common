@@ -3,6 +3,9 @@ using System.ComponentModel.DataAnnotations;
 
 namespace NuvTools.Common.IO.File;
 
+/// <summary>
+/// Provides utilities for working with file content types and extensions.
+/// </summary>
 public static class ContentTypes
 {
     /// <summary>

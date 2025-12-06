@@ -118,6 +118,12 @@ public static class NumberToWords
         return string.Empty;
     }
 
+    /// <summary>
+    /// Converts a decimal value to its written form in Portuguese (Brazil), including currency representation.
+    /// </summary>
+    /// <param name="value">The decimal value to convert. Must be between 0.01 and 999,999,999,999,999.99.</param>
+    /// <returns>The value written out in Portuguese with currency (reais/centavos).</returns>
+    /// <exception cref="Exception">Thrown when the value is outside the allowed range.</exception>
     public static string ToWords(decimal value)
     {
         string result = string.Empty;

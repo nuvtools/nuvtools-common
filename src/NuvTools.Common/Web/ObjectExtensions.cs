@@ -5,6 +5,9 @@ using System.Web;
 
 namespace NuvTools.Common.Web;
 
+/// <summary>
+/// Provides extension methods for converting objects to query strings and parsing query strings.
+/// </summary>
 public static class ObjectExtensions
 {
     /// <summary>

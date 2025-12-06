@@ -1,5 +1,8 @@
 ﻿namespace NuvTools.Common.Numbers;
 
+/// <summary>
+/// Provides extension methods for parsing strings to numeric types with null-safe handling.
+/// </summary>
 public static class NumbersExtensions
 {
     /// <summary>
