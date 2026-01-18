@@ -70,7 +70,7 @@ public class TimeZoneExtensionsTests
     public void DateParseToUtc_ShouldParseStringAndConvertToUtc()
     {
         // Arrange
-        var dateString = "25-10-2025 09:00:00";
+        var dateString = "25-10-2026 09:00:00";
 
         // Act
         var utcTime = dateString.DateParseToUtc(fromTimeZoneRegion: TimeZoneRegion.Brasilia);
@@ -84,7 +84,7 @@ public class TimeZoneExtensionsTests
     public void DateParseToUtc_WithOffset_ShouldUseOffsetInsteadOfRegion()
     {
         // Arrange
-        var dateString = "25-10-2025 09:00:00";
+        var dateString = "25-10-2026 09:00:00";
 
         // Act
         var utcTime = dateString.DateParseToUtc(offsetMinutes: -180);

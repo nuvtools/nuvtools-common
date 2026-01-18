@@ -19,7 +19,7 @@ public enum EnumInt
 class ModelBasicTest
 {
     public int Id { get; set; }
-    public string Name { get; set; }
+    public string? Name { get; set; }
     public int YearBirth { get; set; }
     public System.DateTime? Date { get; set; }
     public decimal Value { get; set; }
@@ -29,29 +29,29 @@ class ModelBasicTest
 
 class ModelTest : ModelBasicTest
 {
-    public ModelTest Cousin { get; set; }
-    public ModelTest[] Children { get; set; }
-    public List<ModelTest> ChildrenList { get; set; }
+    public ModelTest? Cousin { get; set; }
+    public ModelTest[]? Children { get; set; }
+    public List<ModelTest>? ChildrenList { get; set; }
 
-    public IEnumerable<ModelTest> ChildrenEnumerable { get; set; }
+    public IEnumerable<ModelTest>? ChildrenEnumerable { get; set; }
 
-    public int[] Numbers { get; set; }
-    public string[] Strings { get; set; }
+    public int[]? Numbers { get; set; }
+    public string[]? Strings { get; set; }
 }
 
 class ModelListTest
 {
-    public string Name { get; set; }
-    public ModelTest[] Children { get; set; }
+    public string? Name { get; set; }
+    public ModelTest[]? Children { get; set; }
 
-    public ModelTest[][] ChildrenNested { get; set; }
+    public ModelTest[][]? ChildrenNested { get; set; }
 
-    public List<ModelTest> ChildrenList { get; set; }
+    public List<ModelTest>? ChildrenList { get; set; }
 
-    public List<List<ModelTest>> ChildrenNestedList { get; set; }
+    public List<List<ModelTest>>? ChildrenNestedList { get; set; }
 
-    public IEnumerable<ModelTest> ChildrenEnumerable { get; set; }
+    public IEnumerable<ModelTest>? ChildrenEnumerable { get; set; }
 
-    public int[] Numbers { get; set; }
-    public string[] Strings { get; set; }
+    public int[]? Numbers { get; set; }
+    public string[]? Strings { get; set; }
 }

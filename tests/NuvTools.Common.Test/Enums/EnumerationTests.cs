@@ -95,8 +95,8 @@ public class EnumerationTests
     {
         var list = Enumeration.ToList<FormatType>(true);
 
-        Assert.That(list is not null);
-        Assert.That("excel" == list[0].Description);
+        Assert.That(list, Is.Not.Null);
+        Assert.That("excel" == list![0].Description);
 
         //Using display
         Assert.That("More than one" == list[2].Description);
@@ -138,8 +138,8 @@ public class EnumerationTests
     {
         var list = Enumeration.ToList<FormatTypeShort, short>(false);
 
-        Assert.That(list != null);
-        Assert.That(list[0].Id.GetType() == typeof(short));
+        Assert.That(list, Is.Not.Null);
+        Assert.That(list![0].Id.GetType() == typeof(short));
         Assert.That("word" == list[0].Description); //sorted
 
         //Using display
@@ -154,8 +154,8 @@ public class EnumerationTests
     {
         var list = Enumeration.ToList<FormatTypeShort, short>(true);
 
-        Assert.That(list != null);
-        Assert.That(list[0].Id.GetType() == typeof(short));
+        Assert.That(list, Is.Not.Null);
+        Assert.That(list![0].Id.GetType() == typeof(short));
         Assert.That("excel" == list[0].Description); //sorted
 
         //Using display
@@ -190,5 +190,49 @@ public class EnumerationTests
     public void GetValueTest()
     {
 
+    }
+
+    [Test()]
+    public void ConcatEnumValues_MultipleEnums_ReturnsConcatenatedValue()
+    {
+        // FormatType: Word=1, Excel=2, PowerPoint=3
+        var result = Enumeration.ConcatEnumValues(FormatType.Word, FormatType.Excel, FormatType.PowerPoint);
+        Assert.That(result, Is.EqualTo(123));
+    }
+
+    [Test()]
+    public void ConcatEnumValues_SingleEnum_ReturnsValue()
+    {
+        var result = Enumeration.ConcatEnumValues(FormatType.PowerPoint);
+        Assert.That(result, Is.EqualTo(3));
+    }
+
+    [Test()]
+    public void ConcatEnumValues_MixedEnumTypes_ReturnsConcatenatedValue()
+    {
+        // FormatType.Word=1, FormatTypeByte.Excel=2, FormatTypeLong.Duplo=4
+        var result = Enumeration.ConcatEnumValues(FormatType.Word, FormatTypeByte.Excel, FormatTypeLong.Duplo);
+        Assert.That(result, Is.EqualTo(124));
+    }
+
+    [Test()]
+    public void ConcatEnumValues_EmptyArray_ThrowsArgumentException()
+    {
+        Assert.Throws<ArgumentException>(() => Enumeration.ConcatEnumValues());
+    }
+
+    [Test()]
+    public void ConcatEnumValues_NullArray_ThrowsArgumentNullException()
+    {
+        Assert.Throws<ArgumentNullException>(() => Enumeration.ConcatEnumValues(null!));
+    }
+
+    [Test()]
+    public void ConcatEnumValues_MultiDigitValues_ReturnsConcatenatedValue()
+    {
+        // FormatType: Word=1, Excel=2 → should produce 12
+        // FormatTypeLong: Duplo=4, PowerPoint=3 → should produce 43
+        var result = Enumeration.ConcatEnumValues(FormatType.Word, FormatType.Excel);
+        Assert.That(result, Is.EqualTo(12));
     }
 }

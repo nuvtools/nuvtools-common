@@ -107,42 +107,42 @@ public class ObjectExtensionsTests
             }
         }
     };
-    private string serializedObject;
+    private string? serializedObject;
 
     [Test(), Order(1)]
     public void SerializeTest()
     {
         serializedObject = modelInstance.Serialize(2);
-        Assert.That(serializedObject is not null);
+        Assert.That(serializedObject, Is.Not.Null);
     }
 
-    private string serializedLists;
+    private string? serializedLists;
     [Test(), Order(2)]
     public void SerializeListTest()
     {
         serializedLists = modelInstanceLists.Serialize(2);
-        Assert.That(serializedLists is not null);
+        Assert.That(serializedLists, Is.Not.Null);
     }
 
-    private string serializedNestedLists;
+    private string? serializedNestedLists;
     [Test(), Order(3)]
     public void SerializeNestedListTest()
     {
         serializedNestedLists = modelInstanceListsNested.Serialize(4);
-        Assert.That(serializedNestedLists is not null);
+        Assert.That(serializedNestedLists, Is.Not.Null);
     }
 
     [Test(), Order(4)]
     public void DeserializeTest()
     {
-        ModelTest copiedObject = modelInstance.Serialize(4).Deserialize<ModelTest>(3);
-        Assert.That(copiedObject is not null);
+        var copiedObject = modelInstance.Serialize(4).Deserialize<ModelTest>(3);
+        Assert.That(copiedObject, Is.Not.Null);
     }
 
     [Test(), Order(5)]
     public void CopyTest()
     {
-        ModelTest copiedObject = modelInstance.Clone(2);
+        var copiedObject = modelInstance.Clone(2);
         Assert.That(modelInstance != copiedObject);
     }
 
@@ -152,9 +152,10 @@ public class ObjectExtensionsTests
         ModelTest modelEnum = new() { EnumP = EnumInt.Option3, EnumShortP = EnumShort.Option1 };
 
         serializedObject = modelEnum.Serialize(2);
-        Assert.That(serializedObject is not null);
+        Assert.That(serializedObject, Is.Not.Null);
 
-        ModelTest newModelTest = serializedObject.Deserialize<ModelTest>();
-        Assert.That(newModelTest.EnumShortP == EnumShort.Option1);
+        var newModelTest = serializedObject!.Deserialize<ModelTest>();
+        Assert.That(newModelTest, Is.Not.Null);
+        Assert.That(newModelTest!.EnumShortP == EnumShort.Option1);
     }
 }

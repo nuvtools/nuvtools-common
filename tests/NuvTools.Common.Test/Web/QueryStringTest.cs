@@ -18,9 +18,9 @@ public class QueryStringTest
     {
         public int Id { get; set; }
         public DateTime? Date { get; set; }
-        public DateTimeOffset? DateTimeOffset { get; set; }    
-        public string Name { get; set; }
-        public List<long> Codes { get; set; }
+        public DateTimeOffset? DateTimeOffset { get; set; }
+        public string? Name { get; set; }
+        public List<long>? Codes { get; set; }
 
         public EnumFake? EnumFake { get; set; }
     }

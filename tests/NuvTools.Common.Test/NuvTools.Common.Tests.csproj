@@ -4,7 +4,7 @@
 		<TargetFramework>net10.0</TargetFramework>
 		<IsPackable>false</IsPackable>
 		<Authors>Nuv Tools</Authors>
-		<Copyright>Copyright © 2025 Nuv Tools</Copyright>
+		<Copyright>Copyright © 2026 Nuv Tools</Copyright>
 		<PackageProjectUrl>https://nuvtools.com</PackageProjectUrl>
 		<Nullable>enable</Nullable>
 		<ImplicitUsings>enable</ImplicitUsings>
@@ -20,7 +20,7 @@
 
 	<ItemGroup>
 		<PackageReference Include="NUnit" Version="4.4.0" />
-		<PackageReference Include="NUnit3TestAdapter" Version="5.2.0" />
+		<PackageReference Include="NUnit3TestAdapter" Version="6.1.0" />
 		<PackageReference Include="Microsoft.NET.Test.Sdk" Version="18.0.1" />
 	</ItemGroup>
 

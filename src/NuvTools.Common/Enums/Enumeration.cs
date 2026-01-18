@@ -1,6 +1,7 @@
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.Reflection;
+using System.Text;
 
 namespace NuvTools.Common.Enums;
 
@@ -209,7 +210,7 @@ public static class Enumeration
 
         foreach (var e in enumList)
         {
-            if (Activator.CreateInstance(typeof(TClass)) is not TClass obj) continue;
+            if (Activator.CreateInstance<TClass>() is not TClass obj) continue;
 
             obj.GetType().GetRuntimeProperty(idField)?.SetValue(obj, e.Id, null);
             obj.GetType().GetRuntimeProperty(descriptionField)?.SetValue(obj, e.Description, null);
@@ -231,6 +232,58 @@ public static class Enumeration
         var fields = enumType.GetRuntimeFields().Where(f => f.IsLiteral);
 
         return fields.Select(field => field.GetValue(enumType)).Cast<TEnum>().ToList();
+    }
+
+    /// <summary>
+    /// Concatenates the underlying integer values of multiple enum values into a string.
+    /// </summary>
+    /// <param name="values">The enum values to concatenate (can be of different enum types).</param>
+    /// <returns>A string formed by concatenating each enum's underlying integer value.</returns>
+    /// <exception cref="ArgumentNullException">Thrown when <paramref name="values"/> is <see langword="null"/> or contains null elements.</exception>
+    /// <exception cref="ArgumentException">Thrown when <paramref name="values"/> is empty or contains negative values.</exception>
+    public static string ConcatEnumValues(params Enum[] values)
+        => ConcatEnumValues(values, padWidth: null);
+
+    /// <summary>
+    /// Concatenates the underlying integer values of multiple enum values into a string with optional padding.
+    /// </summary>
+    /// <param name="values">The enum values to concatenate (can be of different enum types).</param>
+    /// <param name="padWidth">Fixed width for each value. Values are left-padded with zeros to prevent ambiguity.</param>
+    /// <returns>A string formed by concatenating each enum's underlying integer value.</returns>
+    /// <exception cref="ArgumentNullException">Thrown when <paramref name="values"/> is <see langword="null"/> or contains null elements.</exception>
+    /// <exception cref="ArgumentException">
+    /// Thrown when <paramref name="values"/> is empty, contains negative values, 
+    /// or a value exceeds the specified <paramref name="padWidth"/>.
+    /// </exception>
+    public static string ConcatEnumValues(Enum[] values, int? padWidth)
+    {
+        ArgumentNullException.ThrowIfNull(values);
+
+        if (values.Length == 0)
+            throw new ArgumentException("At least one enum value must be provided.", nameof(values));
+
+        var maxValue = padWidth.HasValue ? (long)Math.Pow(10, padWidth.Value) - 1 : long.MaxValue;
+        var format = padWidth.HasValue ? new string('0', padWidth.Value) : null;
+        var builder = new StringBuilder();
+
+        foreach (var value in values)
+        {
+            ArgumentNullException.ThrowIfNull(value, nameof(values));
+
+            var numericValue = Convert.ToInt64(value);
+
+            if (numericValue < 0)
+                throw new ArgumentException(
+                    $"Negative underlying enum value '{numericValue}' is not supported.", nameof(values));
+
+            if (numericValue > maxValue)
+                throw new ArgumentException(
+                    $"Value '{numericValue}' cannot be represented in {padWidth} digits.", nameof(values));
+
+            builder.Append(format is null ? numericValue : numericValue.ToString(format));
+        }
+
+        return builder.ToString();
     }
 
 }

@@ -118,6 +118,13 @@ public enum Status
     Inactive = 2
 }
 
+public enum Priority
+{
+    Low = 1,
+    Medium = 2,
+    High = 3
+}
+
 // Extract metadata
 var name = Status.Active.GetName();           // "Active"
 var shortName = Status.Active.GetShortName(); // "ACT"
@@ -128,7 +135,22 @@ var statusList = Enumeration.ToList<Status>();
 
 // Find enum by metadata
 var status = Enumeration.GetEnumByShortName<Status>("ACT"); // Status.Active
+
+// Concatenate enum values into a composite integer
+int composite = Enumeration.ConcatEnumValues(Status.Active, Priority.High);
+// Result: 13 (concatenation of "1" + "3")
+
+int multiValue = Enumeration.ConcatEnumValues(Status.Active, Status.Inactive, Priority.Medium);
+// Result: 122 (concatenation of "1" + "2" + "2")
 ```
+
+**Features:**
+- Extract `Name`, `ShortName`, `Description`, `GroupName` from `DisplayAttribute`
+- Fallback to `DescriptionAttribute` when `DisplayAttribute` is not present
+- Convert enums to lists for UI dropdowns with sorting options
+- Find enum values by metadata (name, short name, description)
+- Concatenate multiple enum values into a single composite integer
+- Support for different underlying types (int, byte, short, long)
 
 ### 4. String Extensions
 
@@ -321,4 +343,4 @@ This project is licensed under the terms specified in the [LICENSE](LICENSE) fil
 
 ---
 
-Copyright © 2025 Nuv Tools
+Copyright © 2026 Nuv Tools

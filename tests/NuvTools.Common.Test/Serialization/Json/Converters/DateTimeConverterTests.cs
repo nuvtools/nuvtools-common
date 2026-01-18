@@ -33,7 +33,7 @@ class ModelConverterErrorTest
     public int Number { get; set; }
 
     [DateTimeJsonConverter("dd/MM/yyyy")]
-    public string Text { get; set; }
+    public string? Text { get; set; }
 }
 
 [TestFixture()]
@@ -48,7 +48,7 @@ public class DateTimeConverterTests
         DateOutsideOffsetOption2 = new DateTimeOffset(1994, 4, 20, 11, 20, 15, TimeSpan.Zero),
     };
 
-    private string serializedObject;
+    private string? serializedObject;
 
     [Test(), Order(0)]
     public void SerializeTest()
@@ -56,7 +56,7 @@ public class DateTimeConverterTests
         serializedObject = modelInstance.Serialize(2);
 
         //serializedObject = JsonSerializer.Serialize(modelInstance);
-        Assert.That(serializedObject.Contains("\"DateOutside\":\"20/04/1984\""));
+        Assert.That(serializedObject!.Contains("\"DateOutside\":\"20/04/1984\""));
 
         Assert.That(serializedObject.Contains("\"DateOutsideOption2\":\"1985-04-20\""));
 
