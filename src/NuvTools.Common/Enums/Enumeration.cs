@@ -2,6 +2,7 @@ using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.Reflection;
 using System.Text;
+using NuvTools.Common.Resources;
 
 namespace NuvTools.Common.Enums;
 
@@ -260,7 +261,7 @@ public static class Enumeration
         ArgumentNullException.ThrowIfNull(values);
 
         if (values.Length == 0)
-            throw new ArgumentException("At least one enum value must be provided.", nameof(values));
+            throw new ArgumentException(Messages.AtLeastOneEnumValueMustBeProvided, nameof(values));
 
         var maxValue = padWidth.HasValue ? (long)Math.Pow(10, padWidth.Value) - 1 : long.MaxValue;
         var format = padWidth.HasValue ? new string('0', padWidth.Value) : null;
@@ -274,11 +275,11 @@ public static class Enumeration
 
             if (numericValue < 0)
                 throw new ArgumentException(
-                    $"Negative underlying enum value '{numericValue}' is not supported.", nameof(values));
+                    string.Format(Messages.NegativeEnumValueNotSupported, numericValue), nameof(values));
 
             if (numericValue > maxValue)
                 throw new ArgumentException(
-                    $"Value '{numericValue}' cannot be represented in {padWidth} digits.", nameof(values));
+                    string.Format(Messages.ValueCannotBeRepresentedInXDigits, numericValue, padWidth), nameof(values));
 
             builder.Append(format is null ? numericValue : numericValue.ToString(format));
         }

@@ -197,14 +197,14 @@ public class EnumerationTests
     {
         // FormatType: Word=1, Excel=2, PowerPoint=3
         var result = Enumeration.ConcatEnumValues(FormatType.Word, FormatType.Excel, FormatType.PowerPoint);
-        Assert.That(result, Is.EqualTo(123));
+        Assert.That(result, Is.EqualTo("123"));
     }
 
     [Test()]
     public void ConcatEnumValues_SingleEnum_ReturnsValue()
     {
         var result = Enumeration.ConcatEnumValues(FormatType.PowerPoint);
-        Assert.That(result, Is.EqualTo(3));
+        Assert.That(result, Is.EqualTo("3"));
     }
 
     [Test()]
@@ -212,7 +212,7 @@ public class EnumerationTests
     {
         // FormatType.Word=1, FormatTypeByte.Excel=2, FormatTypeLong.Duplo=4
         var result = Enumeration.ConcatEnumValues(FormatType.Word, FormatTypeByte.Excel, FormatTypeLong.Duplo);
-        Assert.That(result, Is.EqualTo(124));
+        Assert.That(result, Is.EqualTo("124"));
     }
 
     [Test()]
@@ -230,9 +230,8 @@ public class EnumerationTests
     [Test()]
     public void ConcatEnumValues_MultiDigitValues_ReturnsConcatenatedValue()
     {
-        // FormatType: Word=1, Excel=2 → should produce 12
-        // FormatTypeLong: Duplo=4, PowerPoint=3 → should produce 43
+        // FormatType: Word=1, Excel=2 → should produce "12"
         var result = Enumeration.ConcatEnumValues(FormatType.Word, FormatType.Excel);
-        Assert.That(result, Is.EqualTo(12));
+        Assert.That(result, Is.EqualTo("12"));
     }
 }

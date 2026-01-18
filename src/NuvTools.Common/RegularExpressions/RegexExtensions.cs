@@ -1,4 +1,5 @@
 using System.Text.RegularExpressions;
+using NuvTools.Common.Resources;
 
 namespace NuvTools.Common.RegularExpressions;
 
@@ -21,7 +22,7 @@ public static class RegexExtensions
     public static Match Match(this string? value, string pattern, RegexOptions options = RegexOptions.None)
     {
         if (string.IsNullOrEmpty(pattern))
-            throw new ArgumentException("Regex pattern cannot be null or empty.", nameof(pattern));
+            throw new ArgumentException(Messages.RegexPatternCannotBeNullOrEmpty, nameof(pattern));
 
         if (value is null)
             return Regex.Match(string.Empty, pattern);
@@ -43,7 +44,7 @@ public static class RegexExtensions
     public static bool IsMatch(this string? value, string pattern, RegexOptions options = RegexOptions.IgnoreCase)
     {
         if (string.IsNullOrEmpty(pattern))
-            throw new ArgumentException("Regex pattern cannot be null or empty.", nameof(pattern));
+            throw new ArgumentException(Messages.RegexPatternCannotBeNullOrEmpty, nameof(pattern));
 
         if (string.IsNullOrEmpty(value))
             return false;
@@ -68,7 +69,7 @@ public static class RegexExtensions
         if (value is null) return null;
 
         if (string.IsNullOrEmpty(pattern))
-            throw new ArgumentException("Regex pattern cannot be null or empty.", nameof(pattern));
+            throw new ArgumentException(Messages.RegexPatternCannotBeNullOrEmpty, nameof(pattern));
 
         return Regex.Replace(value, pattern, newValue ?? string.Empty, options);
     }

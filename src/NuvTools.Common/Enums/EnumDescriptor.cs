@@ -1,7 +1,7 @@
-﻿
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.Text.Json.Serialization;
+using NuvTools.Common.Resources;
 
 namespace NuvTools.Common.Enums;
 
@@ -39,7 +39,7 @@ internal class EnumDescriptor<TKey>(TKey id) : IEnumDescriptor<TKey> where TKey 
         }
         catch (InvalidCastException)
         {
-            throw new InvalidCastException("The Id type should be the same of Enum underlyting type.");
+            throw new InvalidCastException(Messages.IdTypeShouldMatchEnumUnderlyingType);
         }
 
         enumerator.EnumeratorType = value.GetType();

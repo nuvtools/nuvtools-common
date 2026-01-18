@@ -19,7 +19,7 @@ namespace NuvTools.Common.Resources {
     // class via a tool like ResGen or Visual Studio.
     // To add or remove a member, edit your .ResX file then rerun ResGen
     // with the /str option, or rebuild your VS project.
-    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "17.0.0.0")]
+    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "18.0.0.0")]
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
     public class Messages {
@@ -61,6 +61,15 @@ namespace NuvTools.Common.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to At least one enum value must be provided..
+        /// </summary>
+        public static string AtLeastOneEnumValueMustBeProvided {
+            get {
+                return ResourceManager.GetString("AtLeastOneEnumValueMustBeProvided", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Cannot convert null to non-nullable type {0}..
         /// </summary>
         public static string CannotConvertNullToNonNullableTypeX {
@@ -79,11 +88,38 @@ namespace NuvTools.Common.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The Id type should be the same of Enum underlying type..
+        /// </summary>
+        public static string IdTypeShouldMatchEnumUnderlyingType {
+            get {
+                return ResourceManager.GetString("IdTypeShouldMatchEnumUnderlyingType", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to MaxDepth must be greater than zero..
         /// </summary>
         public static string MaxDepthMustBeGreaterThanZero {
             get {
                 return ResourceManager.GetString("MaxDepthMustBeGreaterThanZero", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Negative underlying enum value &apos;{0}&apos; is not supported..
+        /// </summary>
+        public static string NegativeEnumValueNotSupported {
+            get {
+                return ResourceManager.GetString("NegativeEnumValueNotSupported", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Regex pattern cannot be null or empty..
+        /// </summary>
+        public static string RegexPatternCannotBeNullOrEmpty {
+            get {
+                return ResourceManager.GetString("RegexPatternCannotBeNullOrEmpty", resourceCulture);
             }
         }
         
@@ -102,6 +138,15 @@ namespace NuvTools.Common.Resources {
         public static string UnsupportedTypeX {
             get {
                 return ResourceManager.GetString("UnsupportedTypeX", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Value &apos;{0}&apos; cannot be represented in {1} digits..
+        /// </summary>
+        public static string ValueCannotBeRepresentedInXDigits {
+            get {
+                return ResourceManager.GetString("ValueCannotBeRepresentedInXDigits", resourceCulture);
             }
         }
         

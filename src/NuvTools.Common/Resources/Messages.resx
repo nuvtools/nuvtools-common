@@ -135,4 +135,19 @@
   <data name="ValueOutsideRange" xml:space="preserve">
     <value>Value outside range</value>
   </data>
+  <data name="AtLeastOneEnumValueMustBeProvided" xml:space="preserve">
+    <value>At least one enum value must be provided.</value>
+  </data>
+  <data name="NegativeEnumValueNotSupported" xml:space="preserve">
+    <value>Negative underlying enum value '{0}' is not supported.</value>
+  </data>
+  <data name="ValueCannotBeRepresentedInXDigits" xml:space="preserve">
+    <value>Value '{0}' cannot be represented in {1} digits.</value>
+  </data>
+  <data name="IdTypeShouldMatchEnumUnderlyingType" xml:space="preserve">
+    <value>The Id type should be the same of Enum underlying type.</value>
+  </data>
+  <data name="RegexPatternCannotBeNullOrEmpty" xml:space="preserve">
+    <value>Regex pattern cannot be null or empty.</value>
+  </data>
 </root>
