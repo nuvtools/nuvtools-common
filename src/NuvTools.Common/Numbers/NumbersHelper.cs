@@ -14,6 +14,7 @@ internal static class NumbersHelper
     /// <returns>The quotient of the division operation.</returns>
     public static long DivRem(long number, long divisor, out long remainder)
     {
+        //Teste
         var result = number / divisor;
         remainder = number % divisor;
         return result;
