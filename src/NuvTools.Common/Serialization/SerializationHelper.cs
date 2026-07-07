@@ -26,9 +26,16 @@ public static class SerializationHelper
                 typeof(DateTime),
                 typeof(DateTimeOffset),
                 typeof(TimeSpan),
-                typeof(Guid)
+                typeof(DateOnly),
+                typeof(TimeOnly),
+                typeof(Guid),
+                typeof(Uri),
+                typeof(Version),
+                typeof(Half),
+                typeof(Int128),
+                typeof(UInt128)
                     }.Contains(valueType)
-            || Convert.GetTypeCode(valueType) != TypeCode.Object; // Covers basic types handled by TypeCode
+            || (!valueType.IsEnum && Type.GetTypeCode(valueType) != TypeCode.Object); // Covers basic types handled by TypeCode
     }
 
     /// <summary>

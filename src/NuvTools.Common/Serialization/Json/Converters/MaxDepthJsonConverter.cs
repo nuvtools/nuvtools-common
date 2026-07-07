@@ -1,6 +1,7 @@
 ﻿using System.Text.Json;
 using System.Text.Json.Serialization;
 using System.Collections;
+using System.Globalization;
 using System.Reflection;
 using NuvTools.Common.Resources;
 using NuvTools.Common.Serialization.Json;
@@ -69,6 +70,14 @@ public class MaxDepthJsonConverter<T> : JsonConverter<T>
             return; // Reached the maximum depth, stop serialization.
         }
 
+        // Dictionaries must be serialized as JSON objects (key/value pairs), like System.Text.Json.
+        // Without this branch they match the IEnumerable path and become an array of KeyValuePair objects.
+        if (obj is IDictionary dictionary)
+        {
+            SerializeDictionary(dictionary, writer, options, currentDepth);
+            return;
+        }
+
         if (objectType.IsArray || objectType.IsList())
         {
             writer.WriteStartArray();
@@ -84,11 +93,29 @@ public class MaxDepthJsonConverter<T> : JsonConverter<T>
 
         writer.WriteStartObject();
 
-        foreach (var property in objectType.GetProperties())
+        // Public instance properties only: the default GetProperties() also returns static properties
+        // (e.g. DateOnly.MinValue/MaxValue), which must not be part of the serialized payload.
+        foreach (var property in objectType.GetProperties(BindingFlags.Public | BindingFlags.Instance))
         {
+            if (!property.CanRead || property.GetIndexParameters().Length > 0)
+                continue;
+
             writer.WritePropertyName(property.Name);
             var value = property.GetValue(obj);
             Serialize(value, writer, options, currentDepth + 1, propertyInfo: property);
+        }
+
+        writer.WriteEndObject();
+    }
+
+    private void SerializeDictionary(IDictionary dictionary, Utf8JsonWriter writer, JsonSerializerOptions options, int currentDepth)
+    {
+        writer.WriteStartObject();
+
+        foreach (DictionaryEntry entry in dictionary)
+        {
+            writer.WritePropertyName(Convert.ToString(entry.Key, CultureInfo.InvariantCulture) ?? string.Empty);
+            Serialize(entry.Value, writer, options, currentDepth + 1);
         }
 
         writer.WriteEndObject();

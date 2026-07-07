@@ -39,6 +39,26 @@ class ModelTest : ModelBasicTest
     public string[]? Strings { get; set; }
 }
 
+class ModelModernTypesTest
+{
+    public static string StaticValue { get; set; } = "must-not-serialize";
+
+    public System.DateOnly BirthDate { get; set; }
+    public System.DateOnly? OptionalDate { get; set; }
+    public System.TimeOnly StartTime { get; set; }
+    public System.Guid Id { get; set; }
+    public System.Uri? Site { get; set; }
+    public System.Version? AppVersion { get; set; }
+}
+
+class ModelDictionaryTest
+{
+    public string? Name { get; set; }
+    public Dictionary<string, int>? Values { get; set; }
+    public Dictionary<string, ModelBasicTest>? Children { get; set; }
+    public Dictionary<int, string>? Codes { get; set; }
+}
+
 class ModelListTest
 {
     public string? Name { get; set; }
