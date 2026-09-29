@@ -188,6 +188,7 @@ bool isValid = json.IsValidJson(); // true
 Parse strings to numeric types with null or zero fallback.
 
 ```csharp
+using System.Globalization;
 using NuvTools.Common.Numbers;
 
 string value = "123";
@@ -197,9 +198,14 @@ string invalid = "abc";
 long? nullResult = invalid.ParseToLongOrNull(); // null
 long zeroResult = invalid.ParseToLongOrNull(returnZeroIsNull: true); // 0
 
-// Also available for int, short, decimal
+// Also available for int, short, decimal and double
 int? intValue = "42".ParseToIntOrNull();
-decimal? decimalValue = "3.14".ParseToDecimalOrNull();
+
+// Without a provider the text is read in the current culture, which decides the decimal
+// separator: on a pt-BR machine "3.14" is 314. Text written by a machine — a file, a database
+// column, an API — has a fixed format, so pass the culture it was written in.
+decimal? area = "1521.202".ParseToDecimalOrNull(CultureInfo.InvariantCulture); // 1521.202
+double? latitude = "-23.56287".ParseToDoubleOrNull(CultureInfo.InvariantCulture); // -23.56287
 ```
 
 ### 6. Web Utilities

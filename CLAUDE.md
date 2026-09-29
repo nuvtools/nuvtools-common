@@ -147,7 +147,7 @@ Extension methods are pervasive throughout the library:
 
 **Important Extension Locations:**
 - `StringExtensions` - Left/Right, Format, RemoveDiacritics, IsValidJson, GetNumbersOnly
-- `NumbersExtensions` - ParseToLongOrNull, ParseToIntOrNull, ParseToDecimalOrNull
+- `NumbersExtensions` - ParseToLongOrNull, ParseToIntOrNull, ParseToShortOrNull, ParseToDecimalOrNull, ParseToDoubleOrNull. Each has an overload taking an `IFormatProvider`; the one without reads the current culture (pt-BR reads `"3.14"` as 314) and is kept as it was for existing callers. Machine-written text should use `CultureInfo.InvariantCulture`.
 - `EnumerationExtensions` - GetName, GetDescription, GetShortName, GetGroupName
 - `ExceptionExtensions` - AggregateExceptionMessages (traverses inner exceptions)
 - `TimeZoneExtensions` - ToTimeZone, ToTimeZoneOffset, DateParseToUtc
