@@ -130,7 +130,9 @@ public class TimeZoneExtensionsTests
 
         // Assert
         Assert.That(tz, Is.Not.Null);
-        Assert.That(tz.StandardName, Does.Contain("E. South America").Or.Contain("Sao_Paulo").IgnoreCase);
+        // The id, not StandardName: the display name depends on the platform and its ICU data
+        // ("Brasilia Standard Time" on Linux), while the id is the Windows or the IANA one.
+        Assert.That(tz.Id, Does.Contain("E. South America").Or.Contain("Sao_Paulo").IgnoreCase);
     }
 
     [Test]
