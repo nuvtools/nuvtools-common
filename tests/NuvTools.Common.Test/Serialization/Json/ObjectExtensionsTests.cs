@@ -110,7 +110,7 @@ public class ObjectExtensionsTests
     };
     private string? serializedObject;
 
-    [Test(), Order(1)]
+    [Test()]
     public void SerializeTest()
     {
         serializedObject = modelInstance.Serialize(2);
@@ -118,7 +118,7 @@ public class ObjectExtensionsTests
     }
 
     private string? serializedLists;
-    [Test(), Order(2)]
+    [Test()]
     public void SerializeListTest()
     {
         serializedLists = modelInstanceLists.Serialize(2);
@@ -126,28 +126,28 @@ public class ObjectExtensionsTests
     }
 
     private string? serializedNestedLists;
-    [Test(), Order(3)]
+    [Test()]
     public void SerializeNestedListTest()
     {
         serializedNestedLists = modelInstanceListsNested.Serialize(4);
         Assert.That(serializedNestedLists, Is.Not.Null);
     }
 
-    [Test(), Order(4)]
+    [Test()]
     public void DeserializeTest()
     {
         var copiedObject = modelInstance.Serialize(4).Deserialize<ModelTest>(3);
         Assert.That(copiedObject, Is.Not.Null);
     }
 
-    [Test(), Order(5)]
+    [Test()]
     public void CopyTest()
     {
         var copiedObject = modelInstance.Clone(2);
         Assert.That(modelInstance != copiedObject);
     }
 
-    [Test(), Order(6)]
+    [Test()]
     public void SerializeEnumTest()
     {
         ModelTest modelEnum = new() { EnumP = EnumInt.Option3, EnumShortP = EnumShort.Option1 };
@@ -160,7 +160,7 @@ public class ObjectExtensionsTests
         Assert.That(newModelTest!.EnumShortP == EnumShort.Option1);
     }
 
-    [Test(), Order(7)]
+    [Test()]
     public void SerializeModernTypesAsScalarsTest()
     {
         var model = new ModelModernTypesTest
@@ -187,7 +187,7 @@ public class ObjectExtensionsTests
         Assert.That(serialized, Does.Not.Contain("MinValue"));
     }
 
-    [Test(), Order(8)]
+    [Test()]
     public void SerializeIgnoresStaticPropertiesTest()
     {
         var serialized = new ModelModernTypesTest().Serialize(2);
@@ -195,7 +195,7 @@ public class ObjectExtensionsTests
         Assert.That(serialized, Does.Not.Contain(nameof(ModelModernTypesTest.StaticValue)));
     }
 
-    [Test(), Order(9)]
+    [Test()]
     public void SerializeDictionaryAsJsonObjectTest()
     {
         var model = new ModelDictionaryTest
@@ -217,7 +217,7 @@ public class ObjectExtensionsTests
         Assert.That(serialized, Does.Not.Contain("Comparer"));
     }
 
-    [Test(), Order(10)]
+    [Test()]
     public void SerializeRootDictionaryTest()
     {
         var serialized = new Dictionary<string, string> { ["pt"] = "Oi", ["en"] = "Hello" }.Serialize(2);
@@ -225,7 +225,7 @@ public class ObjectExtensionsTests
         Assert.That(serialized, Is.EqualTo("{\"pt\":\"Oi\",\"en\":\"Hello\"}"));
     }
 
-    [Test(), Order(11)]
+    [Test()]
     public void SerializeDictionaryRespectsMaxDepthTest()
     {
         var model = new ModelDictionaryTest

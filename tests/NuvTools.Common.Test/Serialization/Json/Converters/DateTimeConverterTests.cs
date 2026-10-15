@@ -50,7 +50,7 @@ public class DateTimeConverterTests
 
     private string? serializedObject;
 
-    [Test(), Order(0)]
+    [Test()]
     public void SerializeTest()
     {
         serializedObject = modelInstance.Serialize(2);
@@ -63,14 +63,14 @@ public class DateTimeConverterTests
         Assert.That(serializedObject.Contains("\"DateOutsideOffsetOption2\":\"1994-04-20 11:20\""));
     }
 
-    [Test(), Order(1)]
+    [Test()]
     public void DeserializeTest()
     {
         var copiedObject = modelInstance.Serialize().Deserialize<ModelConverterTest>();
         Assert.That(copiedObject is not null);
     }
 
-    [Test(), Order(2)]
+    [Test()]
     public void SerializeErrorTest()
     {
         var modelInstance = new ModelConverterErrorTest
